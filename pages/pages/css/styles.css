@@ -1,3 +1,141 @@
-body {
-  margin:
+.to-header{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.to-label{
+  font-size: 12px;
+  color: #777;
+}
+
+.to-name{
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.to-id{
+  font-size: 13px;
+  color: #555;
+}
+
+
+* { box-sizing: border-box; }
+
+:root{
+  --border:#e7e7e7;
+  --text:#111;
+  --muted:#6b6b6b;
+  --danger:#b00020;
+  --ok:#0a7a2f;
+  --bg:#ffffff;
+}
+
+body{
+  margin:0;
+  padding:16px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+  color:var(--text);
+  background:var(--bg);
+  -webkit-text-size-adjust:100%;
+}
+
+button.primary {
+  background-color: aliceblue;
+  border:none;
+  padding: 8px 16px;
+}
+
+button.primary:hover {
+  background-color: rgb(237, 4, 51);
+  color: white;
+}
+
+button.primary:active {
+  background-color: rgb(200, 2, 40);
+  color: white;
+  
+}
+
+.row{
+  display:flex;
+  flex-direction:column;   
+  gap:6px;
+  padding:12px 0;
+}
+
+.label{
+  font-size:13px;
+  color:var(--muted);
+  letter-spacing:.02em;
+}
+
+.value{
+  font-size:20px;
+  font-weight:700;
+}
+
+
+.muted{
+  margin-top:4px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+input[type="number"]{
+  width:100%;
+  min-height:48px;
+  padding:12px 12px;
+  font-size:16px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  outline:none;
+}
+
+input[type="number"]:focus{
+  border-color:#c9c9c9;
+}
+
+
+.primary{
+  width:100%;
+  min-height:52px;
+  margin-top:14px;
+  font-size:16px;
+  font-weight:800;
+  border:0;
+  border-radius:14px;
+  cursor:pointer;
+}
+
+
+.primary:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+
+#msg{
+  margin-top:10px;
+  font-size:13px;
+  line-height:1.4;
+}
+
+#msg.err{ color:var(--danger); }
+#msg.ok{ color:var(--ok); }
+
+
+@media (min-width: 520px){
+  .row{
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+  }
+  input[type="number"]{
+    width:220px;
+  }
 }
