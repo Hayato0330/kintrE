@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title> tab menu</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="style.css">
   <script src="main.js" defer></script>
   </head>
 
@@ -34,7 +34,16 @@
       <input id="amount" type="number" inputmode="numeric" min="0" step="1" placeholder="例: 500" />
     </div>
 
-    <button class="primary" id="sendBtn">送金する</button>
+    <button type="button" class="primary" id="sendBtn">送金する</button>
+
+    <script>
+  const btn = document.getElementById("sendBtn");
+  btn.addEventListener("click", () => {
+    location.href = "4.html";
+  });
+</script>
+   
+   
 
     <div id="msg" class=""></div>
   </div>
