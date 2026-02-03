@@ -1,4 +1,3 @@
-//2枚目のAPI
 // フロントから「GET /api/recipients?exclude_number=1234567」のように呼ばれる
 export async function onRequestGet(context) {
   const db = context.env.DB;

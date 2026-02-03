@@ -1,4 +1,4 @@
-// 3枚目のAPI
+// POST /api/transaction でアクセスされたら動く
 export async function onRequestPost(context) {
   const db = context.env.DB;
   
