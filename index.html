@@ -37,7 +37,8 @@
                    <script>
                     document.getElementById("sendBtn").addEventListener("click", () => {
                       const acct = window.currentAccountNumber ?? document.getElementById("account-number").textContent.trim();
-                      location.href = "pages/human_select.html?number=${encodeURIComponent(acct)}";
+                      location.href = "pages/human_select.html";
+                      // location.href = "pages/human_select.html?number=${encodeURIComponent(acct)}";
                     });
                    </script>
 
