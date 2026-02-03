@@ -38,10 +38,13 @@
       リンクをコピー
     </button>
 
-    <button class="primary" type="button" onclick="goHome()"
-            style="background:#f2f2f2;margin-top:12px;">
-      トップ画面に戻る
-    </button>
+    <button class="primary" id="sendBtn">トップ画面に戻る</button>
+    <script>
+      const btn = document.getElementById("sendBtn");
+      btn.addEventListener("click", () => {
+        location.href = "../index.html";
+      });
+    </script>
 
     <div id="msg" style="margin-top:12px;"></div>
 
@@ -55,10 +58,6 @@
       navigator.clipboard.writeText(requestLink)
         .then(() => showMsg("コピーしました！", "ok"))
         .catch(() => showMsg("コピーに失敗しました", "err"));
-    }
-
-    function goHome(){
-      window.location.href = "index.html";
     }
 
     function showMsg(text, type){

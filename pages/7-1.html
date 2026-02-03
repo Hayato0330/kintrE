@@ -23,6 +23,12 @@
     </div>
 
     <button class="primary" id="sendBtn">請求する</button>
+    <script>
+      const btn = document.getElementById("sendBtn");
+      btn.addEventListener("click", () => {
+        location.href = "step7_2.html";
+      });
+    </script>
 
     <div id="msg" class=""></div>
 
@@ -36,13 +42,10 @@
             
       <hd>処理完了</hd>
     <button class="primary" id="sendBtn">トップページに戻る</button>
+    
+    
 
-    <script>
-  const btn = document.getElementById("sendBtn");
-  btn.addEventListener("click", () => {
-    location.href = "step7_2.html";
-  });
-</script>
+
   </div>
   </div>
 </body>
