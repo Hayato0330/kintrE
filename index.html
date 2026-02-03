@@ -1,66 +1,64 @@
-<!DOCTYPE html>
-<html lang="ja">
-
-<head>
-<<<<<<< HEAD
-  <meta charset="UTF-8">
-  <title> tab menu</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <script src="main.js" defer></script>
-  </head>
-
-  <body>
-   
-       <!-- 上限金額-->
-    <div class="row">
-      <div class="label" >上限金額</div>
-      <div class="value"><span id="limit">0</span> 円</div>
-    </div>
-
-    <hr style="border:none;border-top:1px solid #eee;margin:12px 0;">
-
-    <!-- 送金「」円 -->
-    <div class="row" style="align-items:flex-end;">
-      <div>
-        <div class="label">送金「 」円</div>
-        <div class="muted">0〜上限の範囲で入力</div>
-      </div>
-      <input id="amount" type="number" inputmode="numeric" min="0" step="1" placeholder="例: 500" />
-    </div>
-
-    <button class="primary" id="sendBtn">送金する</button>
-
-    <div id="msg" class=""></div>
-  </div>
-   
-  </body>
-=======
+<!DOCTYPE html> 
+<html lang="ja"> 
+  <head>
      <meta charset="UTF-8">
-  <title>口座画面</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="phone">
-    <div class="screen">
+      <title>口座画面</title>
+       <link rel="stylesheet" href="css/index.css">
+       </head> 
 
-      <div class="profile">
-        <img src="human1" alt="アイコン">
-        <p class="name">サンプル 氏名</p>
-      </div>
+       
 
-      </div>
-      <p class="account">口座番号：0000000</p>
+      <body> 
+        <div class="phone"> 
+          <div class="screen"> 
+            <div class="profile">
+            <img id="user_icon" src="https://via.placeholder.com/60" alt="アイコン">
+             <p class="name" id="user-name">---</p>
+             </div>
+              <p class="account">
+              口座番号：<span id="account-number">0000000</span>
+              </p>
+               
+               
+               <!-- 残高-->
+                 <div class="row">
+                   <div class="label" >残高</div> 
+                   <div class="value"><span id="limit">0</span> 円</div> 
+                  </div> 
+                  <hr style="border:none;border-top:1px solid #eee;margin:12px 0;"> 
+                  
+                  
+                  
+               <!-- 送金「」円 --> 
+                <div class="row" style="align-items:flex-end;"> 
+                  <div> 
+                    <div class="label">送金</div> 
+                    <button class="primary" id="sendBtn">送金</button> 
+                    <div id="msg" class="">
 
-      <div class="row">
-        <div class="label">預金残高</div>
-        <div class="value"><span id="limit"
-      <div class="balance">
-        <span class="label">預金残高</span>
-        <div class="amount">50,000円</div>
-      </div>
+                    </div>
+                   </div> 
 
-    </div>
-  </div>
- </body>
-</html>
->>>>>>> 897ae815fb2745b849844cc297d53436576a56b2
+                   <script>
+                    document.getElementById("sendBtn").addEventListener("click", () => {
+                      location.href = "pages/human_select.html"; });
+                   </script>
+
+                <!--請求-->
+                 <div class="row" style="align-items:flex-end;">
+                   <div>
+                     <div class="label">請求</div>
+                      <button class="primary" id="requestBtn">請求</button>
+                       <div id="msg" class=""></div>
+                    </div>
+                  </div> 
+
+                  <script>
+  document.getElementById("requestBtn").addEventListener("click", () => {
+    location.href = "pages/7-1.html";
+  });
+</script>
+        </div>
+
+        </body> 
+ </html> 

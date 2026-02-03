@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>請求リンクを作成</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="main.js" defer></script>
+  </head>
+
+  <body>
+
+    <hr style="border:none;border-top:1px solid #eee;margin:12px 0;">
+
+    <!-- 送金「」円 -->
+    <div class="row" style="align-items:flex-end;">
+      <div>
+        <div class="label">請求金額</div>
+      </div>
+      <input id="amount" type="number" inputmode="numeric" min="0" step="1" placeholder="例: 500" />
+    </div>
+
+    <button class="primary" id="sendBtn">請求する</button>
+
+    <div id="msg" class=""></div>
+
+    <div class="form-container">
+        <label>メッセージ<span class="optional">（任意）</span></label>
+        <textarea placeholder="メッセージを入力してください…"></textarea>
+    </div>
+  </div>
+   
+  </body>

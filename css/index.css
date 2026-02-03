@@ -1,0 +1,80 @@
+body {
+  margin: 0;
+  background: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  color: #222;
+}
+
+/* メイン画面 */
+.phone {
+  max-width: 480px;
+  margin: 0 auto;
+  background: #fff;
+  min-height: 100vh;
+}
+
+/* 余白 */
+.screen {
+  padding: 20px;
+}
+
+/* プロフィール */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.name {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* 口座番号 */
+.account {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #666;
+}
+
+/* 行 */
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.label {
+  font-size: 13px;
+  color: #777;
+}
+
+.value {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* ボタン */
+.primary {
+  margin-top: 8px;
+  padding: 10px 16px;
+  background: #007aff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* 区切り線 */
+hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 16px 0;
+}
