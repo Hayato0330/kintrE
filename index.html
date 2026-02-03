@@ -41,7 +41,8 @@
 
                    <script>
                     document.getElementById("sendBtn").addEventListener("click", () => {
-                      location.href = "pages/human_select.html"; });
+                      location.href = `pages/human_select.html?number=${encodeURIComponent(acct)}`;
+                    });
                    </script>
 
                 <!--請求-->
@@ -76,6 +77,8 @@
         document.getElementById("user-name").textContent = data.name ?? "---";
         document.getElementById("account-number").textContent = data.account_number ?? accountNumber;
         document.getElementById("limit").textContent = Number(data.balance ?? 0).toLocaleString("ja-JP");
+
+        window.currentAccountNumber = data.account_number ?? accountNumber;
 
         // アイコン（aiconをicon_urlとして返している想定）
         const icon = data.icon_url ?? "https://via.placeholder.com/60";
