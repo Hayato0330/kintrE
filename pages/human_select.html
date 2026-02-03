@@ -150,34 +150,37 @@ function render(users){
     img.className = "avatar";
     img.alt = "avatar";
     img.src = normalizeIconPath(u.icon);
-    img.onerror = () => {
-      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">
-          <rect width="100%" height="100%" fill="#f0f0f0"/>
-          <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" fill="#888" font-size="14">no image</text>
-        </svg>`
-      );
-    };
 
     const name = document.createElement("div");
     name.className = "name";
     name.innerHTML = `${escapeHtml(u.name)}<div class="small">口座番号: ${escapeHtml(u.number || "-")}</div>`;
 
+    // ▼▼ ここが追加（送金ボタン） ▼▼
+    const btn = document.createElement("button");
+    btn.textContent = "送金";
+    btn.style.padding = "8px 14px";
+    btn.style.fontSize = "14px";
+    btn.style.border = "none";
+    btn.style.borderRadius = "8px";
+    btn.style.background = "#007AFF";
+    btn.style.color = "#fff";
+    btn.style.cursor = "pointer";
+
+    // ボタンクリック → 送金画面へ遷移
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();  
+      location.href = "sent_tab.html";
+    });
+    // ▲▲ 追加ここまで ▲▲
     const chev = document.createElement("div");
     chev.className = "chev";
     chev.textContent = "›";
 
+    // ★ 送金ボタンをユーザーごとに追加
     row.appendChild(img);
     row.appendChild(name);
+    row.appendChild(btn);   
     row.appendChild(chev);
-
-    // クリック時の挙動（必要に応じて変更）
-    row.addEventListener("click", () => {
-      // 送金画面に飛ばすならここ（pages/send.html を作る想定）
-      // location.href = "send.html?number=" + encodeURIComponent(u.number);
-
-      alert(`${u.name}（${u.number}）を選択`);
-    });
 
     listEl.appendChild(row);
   });
