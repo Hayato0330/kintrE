@@ -5,22 +5,17 @@
       <title>口座画面</title>
        <link rel="stylesheet" href="css/index.css">
        </head> 
-
-       
-
       <body> 
         <div class="phone"> 
           <div class="screen"> 
-            <div class="profile">
-            <img id="user_icon" src="https://via.placeholder.com/60" alt="アイコン">
-             <p class="name" id="user-name">---</p>
-             </div>
-              <p class="account">
-              口座番号：<span id="account-number">0000000</span>
-              </p>
+            <div class="profile"> 
+              <img src="human1.png" alt="アイコン">
+               <p class="name">サンプル 氏名</p> 
+              </div>
+               <p class="account">口座番号：0000000</p> 
                
                
-               <!-- 残高-->
+               <!-- 上限金額-->
                  <div class="row">
                    <div class="label" >残高</div> 
                    <div class="value"><span id="limit">0</span> 円</div> 
@@ -41,7 +36,9 @@
 
                    <script>
                     document.getElementById("sendBtn").addEventListener("click", () => {
-                      location.href = "pages/human_select.html"; });
+                      const acct = window.currentAccountNumber ?? document.getElementById("account-number").textContent.trim();
+                      location.href = "pages/human_select.html?number=${encodeURIComponent(acct)}";
+                    });
                    </script>
 
                 <!--請求-->
@@ -61,10 +58,10 @@
         </div>
   <script>
     (async () => {
-      const accountNumber = "10001"; // ここを固定で10001にする
+      const accountNumber = "100001";
 
       try {
-        const res = await fetch(`/api/account?number=${encodeURIComponent(accountNumber)}`);
+        const res = await fetch(`/api/accounts?number=${encodeURIComponent(accountNumber)}`);
         const data = await res.json();
 
         if (!res.ok) {
@@ -77,6 +74,8 @@
         document.getElementById("account-number").textContent = data.account_number ?? accountNumber;
         document.getElementById("limit").textContent = Number(data.balance ?? 0).toLocaleString("ja-JP");
 
+        window.currentAccountNumber = data.account_number ?? accountNumber;
+
         // アイコン（aiconをicon_urlとして返している想定）
         const icon = data.icon_url ?? "https://via.placeholder.com/60";
         document.getElementById("user_icon").src = icon;
@@ -87,5 +86,9 @@
     })();
   </script>
 
+                       </div>
+                       </div>
+                       </div> 
+                      </div> 
         </body> 
-</html> 
+ </html> 
