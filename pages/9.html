@@ -1,21 +1,92 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>送った請求の確認</title>
-  <link rel="stylesheet" href="styles.css">
-
+  <meta charset="utf-8">
+  <title>請求状況確認</title>
 </head>
 
 <body>
-  <div class="phone"> 
-  <div class="screen">
-  <div class="wrap">
-    <header>送った請求の確認</header>
-    <div id="list" class="list"></div>
-  </div>
-</div>
-</div>
+  <h1>請求状況一覧</h1>
+
+  <div id="message"></div>
+  <ul id="list"></ul>
+
+<script>
+const USER_CSV = "../user_db.csv";
+const REQUEST_CSV = "../request_db.csv";
+
+function parseCSV(text){
+  const lines = text.replace(/\r/g,"").split("\n").filter(l => l.trim() !== "");
+  if(lines.length < 2) return [];
+
+  const headers = lines[0].split(",").map(h => h.trim());
+  const data = [];
+
+  for(let i=1;i<lines.length;i++){
+    const cols = lines[i].split(",").map(c => c.trim());
+    const obj = {};
+    headers.forEach((h, idx) => {
+      obj[h] = cols[idx] || "";
+    });
+    data.push(obj);
+  }
+  return data;
+}
+
+async function main(){
+  const messageEl = document.getElementById("message");
+  const listEl = document.getElementById("list");
+
+  try{
+    const userRes = await fetch(USER_CSV, { cache: "no-store" });
+    const reqRes  = await fetch(REQUEST_CSV, { cache: "no-store" });
+
+    if(!userRes.ok || !reqRes.ok){
+      throw new Error("CSVが読み込めません");
+    }
+
+    const users = parseCSV(await userRes.text());
+    const requests = parseCSV(await reqRes.text());
+
+    // request が0件
+    if(requests.length === 0){
+      messageEl.textContent = "請求リンクはまだ作成されていません";
+      return;
+    }
+
+    // number → user の対応表
+    const userMap = {};
+    users.forEach(u => {
+      userMap[u.number] = u;
+    });
+
+    requests.forEach(r => {
+      const li = document.createElement("li");
+
+      const fromUser = userMap[r.from_number];
+      const userName = fromUser ? fromUser.name : "不明なユーザー";
+
+      let statusText = "未";
+      if(r.status === "paid"){
+        statusText = "✔︎";
+      }
+
+      li.textContent =
+        "請求ID: " + r.request_id +
+        " / 相手: " + userName +
+        " / 金額: ¥" + r.amount +
+        " / 状態: " + statusText;
+
+      listEl.appendChild(li);
+    });
+
+  }catch(e){
+    messageEl.textContent = "請求データはありません（読み込み失敗）";
+    console.error(e);
+  }
+}
+
+main();
+</script>
 </body>
 </html>
