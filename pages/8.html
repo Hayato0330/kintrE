@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>請求内容の確認</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="main.js" defer></script>
+</head>
+
+<body>
+
+  <header class="to-header">
+    <div class="to-name">請求元</div>
+    <div class="to-id" id="to-name">三菱銀君</div>
+    <div class="to-id">
+      個人番号 <span id="to-number">12345</span>
+    </div>
+  </header>
+
+  <!-- 上限金額 -->
+  <div class="row">
+    <div class="label">上限金額</div>
+    <div class="value"><span id="limit">5000</span> 円</div>
+  </div>
+
+  <hr style="border:none;border-top:1px solid #eee;margin:12px 0;">
+
+  <!-- 請求金額（入力なし） -->
+  <div class="row" style="align-items:flex-end;">
+    <div>
+      <div class="label">請求金額</div>
+      <div class="muted">相手からの請求額</div>
+    </div>
+    <div class="value">
+      <span id="requestAmount">3000</span> 円
+    </div>
+  </div>
+
+  <!-- 送金ボタン -->
+   <a href="4.html" class="disabled">
+  <button class="primary" id="sendBtn">送金する</button>
+  </a>
+
+  <!-- メッセージ表示 -->
+  <div id="msg"></div>
+
+</body>
+</html>
