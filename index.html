@@ -41,6 +41,13 @@
 
                    <script>
                     document.getElementById("sendBtn").addEventListener("click", () => {
+                      const acct =window.currentAccountNumber ??
+                        document.getElementById("account-number")?.textContent?.trim();
+
+                        if (!acct) {
+                          document.getElementById("msg").textContent = "口座番号が取得できません";
+                          return;
+                        }
                       location.href = `pages/human_select.html?number=${encodeURIComponent(acct)}`;
                     });
                    </script>
