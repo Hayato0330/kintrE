@@ -1,51 +1,142 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
   <meta charset="UTF-8">
-  <title> tab menu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>送金画面</title>
   <link rel="stylesheet" href="style.css">
-  <script src="main.js" defer></script>
-  </head>
+  <style>
+    .loading { opacity: 0.5; pointer-events: none; }
+    .error-msg { color: red; font-size: 0.9em; margin-top: 10px; }
+  </style>
+</head>
 
-  <body>
+<body>
    
-    <header class="to-header">
-      <div class="to-name">送金先</div>
-      <div class="to-id" id="to-name">三菱銀君</div>
-      <div class="to-id"> 個人番号
-      <span id = "to-id">12345</span>
-      </div>
-    >
-       <!-- 上限金額-->
-    <div class="row">
-      <div class="label" >上限金額</div>
-      <div class="value"><span id="limit">0</span> 円</div>
+  <header class="to-header">
+    <div class="to-name">送金先</div>
+    <div class="to-id" id="recipient-name">読み込み中...</div>
+    <div class="to-id"> 個人番号
+      <span id="recipient-number">---</span>
     </div>
+  </header>
 
-    <hr style="border:none;border-top:1px solid #eee;margin:12px 0;">
-
-    <!-- 送金「」円 -->
-    <div class="row" style="align-items:flex-end;">
-      <div>
-        <div class="label">送金「 」円</div>
-        <div class="muted">0〜上限の範囲で入力</div>
-      </div>
-      <input id="amount" type="number" inputmode="numeric" min="0" step="1" placeholder="例: 500" />
-    </div>
-
-    <button type="button" class="primary" id="sendBtn">送金する</button>
-
-    <script>
-  const btn = document.getElementById("sendBtn");
-  btn.addEventListener("click", () => {
-    location.href = "4.html";
-  });
-</script>
-   
-   
-
-    <div id="msg" class=""></div>
+  <div class="row">
+    <div class="label">上限金額 (残高)</div>
+    <div class="value"><span id="limit-balance">---</span> 円</div>
   </div>
+
+  <hr style="border:none;border-top:1px solid #eee;margin:12px 0;">
+
+  <div class="row" style="align-items:flex-end;">
+    <div>
+      <div class="label">送金金額</div>
+      <div class="muted">0〜上限の範囲で入力</div>
+    </div>
+    <input id="amount" type="number" inputmode="numeric" min="1" step="1" placeholder="例: 1000" />
+  </div>
+
+  <button type="button" class="primary" id="sendBtn" disabled>読み込み中...</button>
    
-  </body>
+  <div id="msg" class="error-msg"></div>
+
+  <script>
+    const API_GET_USER = '/api/account';
+    const API_SEND_MONEY = '/api/transaction';
+
+    const params = new URLSearchParams(window.location.search);
+    const senderId = params.get('sender_id'); 
+    const recipientId = params.get('recipient_id');
+
+    let senderData = null;
+    let recipientData = null;
+
+    const btn = document.getElementById("sendBtn");
+    const msgDiv = document.getElementById("msg");
+
+    window.onload = async () => {
+      if (!senderId || !recipientId) {
+        msgDiv.textContent = "エラー: 送金元または送金先のIDが指定されていません。";
+        return;
+      }
+
+      try {
+        const [senderRes, recipientRes] = await Promise.all([
+            fetch(`${API_GET_USER}?id=${senderId}`),
+            fetch(`${API_GET_USER}?id=${recipientId}`)
+        ]);
+
+        if (!senderRes.ok || !recipientRes.ok) throw new Error("ユーザー情報の取得に失敗しました");
+
+        senderData = await senderRes.json();
+        recipientData = await recipientRes.json();
+
+        updateUI();
+
+      } catch (error) {
+        console.error(error);
+        msgDiv.textContent = "データの読み込みに失敗しました。";
+      }
+    };
+
+    function updateUI() {
+      document.getElementById("recipient-name").textContent = recipientData.name;
+      document.getElementById("recipient-number").textContent = recipientData.account_number;
+      
+      document.getElementById("limit-balance").textContent = senderData.balance.toLocaleString();
+
+      const amountInput = document.getElementById("amount");
+      amountInput.max = senderData.balance;
+
+      btn.disabled = false;
+      btn.textContent = "送金する";
+    }
+
+    btn.addEventListener("click", async () => {
+      const amountInput = document.getElementById("amount");
+      const amount = parseInt(amountInput.value);
+
+      msgDiv.textContent = "";
+
+      if (!amount || amount <= 0) {
+        msgDiv.textContent = "正しい金額を入力してください。";
+        return;
+      }
+      if (amount > senderData.balance) {
+        msgDiv.textContent = "残高不足です。";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "送金処理中...";
+
+      try {
+        const response = await fetch(API_SEND_MONEY, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sender_id: senderId,
+            recipient_id: recipientId,
+            amount: amount,
+            message: "送金"
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          alert("送金が完了しました！");
+          location.href = "4.html"; 
+        } else {
+          throw new Error(result.message || result.error || "送金に失敗しました");
+        }
+
+      } catch (error) {
+        msgDiv.textContent = error.message;
+        btn.disabled = false;
+        btn.textContent = "送金する";
+      }
+    });
+  </script>
+</body>
+</html>
