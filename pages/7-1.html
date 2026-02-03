@@ -41,9 +41,13 @@
       <div class="screen">
             
       <hd>処理完了</hd>
-    <button class="primary" id="sendBtn">トップページに戻る</button>
-    
-    
+      <button class="primary" id="goHomeBtn">トップページに戻る</button>
+
+      <script>
+        document.getElementById("goHomeBtn").addEventListener("click", () => {
+          location.href = "../index.html";  // ← トップページへ
+        });
+      </script>
 
 
   </div>
