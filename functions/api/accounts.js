@@ -1,29 +1,43 @@
+//一枚目のAPI
+// フロントから「GET /api/account?number=1234567」のように呼ばれたら動く
 export async function onRequestGet(context) {
-  const db = context.env.DB;
+  const db = context.env.DB; // wrangler.jsoncで設定したDB
 
+  // 1. URLから「口座番号(number)」を取り出す
   const url = new URL(context.request.url);
   const accountNumber = url.searchParams.get("number");
+
+  // 口座番号が送られてこなかった場合のエラー処理
   if (!accountNumber) {
     return Response.json({ error: "口座番号が必要です" }, { status: 400 });
   }
 
   try {
+    // 2. データベースから検索
+    // "SELECT 名前, 残高, アイコン FROM Users WHERE 口座番号 = ?"
     const user = await db
-      .prepare("SELECT name, balance, aicon FROM Users WHERE number = ?")
+      .prepare(
+        `SELECT
+           name,
+           balance,
+           aicon AS icon_url,
+           number AS account_number
+         FROM Users
+         WHERE number = ?`
+      )
       .bind(accountNumber)
       .first();
 
+    // ユーザーが見つからなかった場合
     if (!user) {
       return Response.json({ error: "その口座番号は見つかりません" }, { status: 404 });
     }
 
-    return Response.json({
-      account_number: accountNumber,
-      name: user.name,
-      balance: user.balance,
-      icon_url: user.aicon,
-    });
+    // 3. 見つかったデータを返す
+    return Response.json(user);
+
   } catch (e) {
-    return Response.json({ error: e?.message ?? String(e) }, { status: 500 });
+    // サーバーエラー時
+    return Response.json({ error: e.message }, { status: 500 });
   }
 }
