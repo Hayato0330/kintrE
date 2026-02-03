@@ -1,5 +1,16 @@
 {
-    "name": "my-static-site",
-    "compatibility_date": "2026-02-02",
-    "assets": { "directory": "./" }
+  "name": "kintre-app",
+  "compatibility_date": "2024-02-02",
+
+  // 1. Cloudflare Pagesの設定（公開するフォルダ）
+  "pages_build_output_dir": ".",
+
+  // 2. D1データベースの設定（ここがBindingです！）
+  "d1_databases": [
+    {
+      "binding": "DB",           // ← コード内で context.env.DB と呼ぶための名前
+      "database_name": "kintre-db",
+      "database_id": "ここにIDを貼る" // ← IDを忘れずに！
+    }
+  ]
 }
