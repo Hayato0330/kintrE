@@ -5,17 +5,22 @@
       <title>口座画面</title>
        <link rel="stylesheet" href="css/index.css">
        </head> 
+
+       
+
       <body> 
         <div class="phone"> 
           <div class="screen"> 
-            <div class="profile"> 
-              <img src="human1.png" alt="アイコン">
-               <p class="name">サンプル 氏名</p> 
-              </div>
-               <p class="account">口座番号：0000000</p> 
+            <div class="profile">
+            <img id="user_icon" src="https://via.placeholder.com/60" alt="アイコン">
+             <p class="name" id="user-name">---</p>
+             </div>
+              <p class="account">
+              口座番号：<span id="account-number">0000000</span>
+              </p>
                
                
-               <!-- 上限金額-->
+               <!-- 残高-->
                  <div class="row">
                    <div class="label" >残高</div> 
                    <div class="value"><span id="limit">0</span> 円</div> 
@@ -33,16 +38,27 @@
 
                     </div>
                    </div> 
+
+                   <script>
+                    document.getElementById("sendBtn").addEventListener("click", () => {
+                      location.href = "pages/human_select.html"; });
+                   </script>
+
                 <!--請求-->
                  <div class="row" style="align-items:flex-end;">
                    <div>
                      <div class="label">請求</div>
                       <button class="primary" id="requestBtn">請求</button>
-                       <div id="msg" class="">
+                       <div id="msg" class=""></div>
+                    </div>
+                  </div> 
 
-                       </div>
-                       </div>
-                       </div> 
-                      </div> 
+                  <script>
+  document.getElementById("requestBtn").addEventListener("click", () => {
+    location.href = "pages/7-1.html";
+  });
+</script>
+        </div>
+
         </body> 
  </html> 

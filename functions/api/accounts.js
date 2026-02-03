@@ -1,3 +1,4 @@
+//一枚目のAPI
 // フロントから「GET /api/account?number=1234567」のように呼ばれたら動く
 export async function onRequestGet(context) {
   const db = context.env.DB; // wrangler.jsoncで設定したDB

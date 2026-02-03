@@ -1,5 +1,8 @@
+<<<<<<< HEAD
+=======
 
 
+>>>>>>> 0cdd735c10e1f2623d260f4b5cc134589b9cd182
 .to-header{
   position: sticky;
   top: 0;
@@ -36,6 +39,7 @@
   --bg:#ffffff;
 }
 
+<<<<<<< HEAD
 body{
   margin:0;
   padding:16px;
@@ -43,6 +47,26 @@ body{
   color:var(--text);
   background:var(--bg);
   -webkit-text-size-adjust:100%;
+=======
+body {
+  margin: 0;
+  background: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  color: #222;
+}
+
+/* メイン画面 */
+.phone {
+  max-width: 480px;
+  margin: 0 auto;
+  background: #fff;
+  min-height: 100vh;
+}
+
+/* 余白 */
+.screen {
+  padding: 20px;
+>>>>>>> 0cdd735c10e1f2623d260f4b5cc134589b9cd182
 }
 
 button.primary {
@@ -59,12 +83,20 @@ button.primary:hover {
 button.primary:active {
   background-color: rgb(200, 2, 40);
   color: white;
+<<<<<<< HEAD
+  
+=======
  
+>>>>>>> 0cdd735c10e1f2623d260f4b5cc134589b9cd182
 }
 
 .row{
   display:flex;
+<<<<<<< HEAD
+  flex-direction:column;   
+=======
   flex-direction:column;  
+>>>>>>> 0cdd735c10e1f2623d260f4b5cc134589b9cd182
   gap:6px;
   padding:12px 0;
 }
@@ -140,4 +172,8 @@ input[type="number"]:focus{
   input[type="number"]{
     width:220px;
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 0cdd735c10e1f2623d260f4b5cc134589b9cd182
