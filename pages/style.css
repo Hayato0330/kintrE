@@ -1,0 +1,67 @@
+
+
+
+/* 全体：スマホで余白と文字の読みやすさを調整 */
+body {
+margin: 0;
+padding: 16px;
+-webkit-text-size-adjust: 100%;
+}
+
+.card {
+max-width: 560px;
+width: 100%;
+margin: 0 auto;
+padding: 16px;
+border-radius: 14px;
+}
+
+/* タップしやすさ（ボタン/入力） */
+button, input {
+font-size: 16px; /* iOSの自動ズーム回避 */
+}
+
+button {
+min-height: 48px; /* タップ領域 */
+}
+
+input[type="number"] {
+width: 100%;
+min-height: 48px;
+box-sizing: border-box;
+}
+
+/* 行の基本：スマホで折り返せるようにする */
+.row {
+flex-wrap: wrap;
+gap: 8px;
+}
+
+/* 画面が狭い場合は「左右レイアウト→縦レイアウト」へ */
+@media (max-width: 480px) {
+body { padding: 12px; }
+
+.card { padding: 14px; }
+
+.row {
+flex-direction: column;
+align-items: stretch; /* 横幅いっぱい使う */
+}
+
+.label {
+font-size: 13px;
+}
+
+.value {
+width: 100%;
+text-align: left; /* 右寄せをやめる */
+font-size: 18px;
+}
+
+/* 送金額入力のブロック（あなたの row align-items:flex-end を上書き） */
+.row[style*="align-items:flex-end"] {
+align-items: stretch !important;
+}
+
+h2 { font-size: 18px; }
+}
