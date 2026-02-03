@@ -133,7 +133,12 @@ body {
 
 /* 余白 */
 .screen {
+  min-height: 100vh;              /* 画面いっぱい */
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* ← 縦方向の中央 */
+  align-items: center;        /* ← 横方向の中央 */
 }
 
 button.primary {
@@ -217,6 +222,7 @@ input[type="number"]:focus{
   line-height:1.4;
 }
 
+
 #msg.err{ color:var(--danger); }
 #msg.ok{ color:var(--ok); }
 
@@ -231,4 +237,101 @@ input[type="number"]:focus{
   input[type="number"]{
     width:220px;
   }
+}
+
+.form-container{
+  margin-top: 14px;
+}
+
+.form-container label{
+  display: block;
+  font-size: 13px;          /* .label と合わせる */
+  color: var(--muted);
+  letter-spacing: .02em;
+  margin-bottom: 6px;
+}
+
+.form-container .optional{
+  font-size: 12px;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+.form-container textarea{
+  width: 100%;
+  min-height: 140px;        /* 好きに変更OK */
+  padding: 12px 12px;
+  font-size: 16px;          /* iOSズーム回避 */
+  line-height: 1.5;
+  border: 1px solid var(--border);
+  border-radius: 12px;      /* input と揃える */
+  outline: none;
+  background: #fff;
+  resize: none;             /* 任意：伸縮させたければ both/vertical に */
+}
+
+.form-container textarea:focus{
+  border-color: #c9c9c9;    /* input:focus と揃える */
+}
+
+/* PC幅のときも見た目が崩れないように（必要なら） */
+@media (min-width: 520px){
+  .form-container textarea{
+    min-height: 160px;
+  }
+}
+
+.msg {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 0;
+}
+
+.msg input[type="number"] {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+* 上側の入力エリア */
+.content{
+  flex: 1;                        /* 余白を持って下へ押し下げる */
+}
+
+/* 下側のボタンエリア */
+.actions{
+  margin-top: auto;               /* 下へ寄せる */
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* 下に置いたボタンがキーボードと被りにくいように少し余白 */
+@supports (padding: max(0px)) {
+  .actions{
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+}
+
+/* 中央に置く箱 */
+.center-box {
+  width: 100%;
+  max-width: 420px;      /* iPhone 幅に近い */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;             /* 各要素の間隔 */
+}
+
+/* 入力欄を100%幅に */
+.msg input[type="number"],
+.form-container textarea,
+.primary {
+  width: 100%;
+  box-sizing: border-box;
 }
