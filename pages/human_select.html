@@ -4,39 +4,24 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>送金相手を選択</title>
-
-  <style>
-    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;background:#f5f5f7}
-    header{padding:16px 18px;font-weight:700;font-size:22px;background:#fff;border-bottom:1px solid #ddd}
-    .wrap{max-width:520px;margin:0 auto}
-    .hint{padding:10px 18px;color:#666;background:#fff;border-bottom:1px solid #eee;font-size:13px}
-    .list{background:#fff}
-    .row{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid #eee;cursor:pointer}
-    .row:hover{background:#fafafa}
-    .avatar{width:54px;height:54px;border-radius:50%;border:1px solid #ddd;object-fit:cover;background:#fff}
-    .name{font-size:20px;font-weight:600;flex:1}
-    .chev{color:#bbb;font-size:26px;line-height:1}
-    .err{padding:14px 18px;color:#b00020;background:#fff;white-space:pre-wrap}
-    .small{color:#777;font-size:12px;margin-top:4px}
-  </style>
+  <link rel="stylesheet" href="../style.css">
 </head>
 <body>
   <div class="wrap">
     <header>送金相手を選択</header>
+
+    <!-- 上部に「自分の口座番号」表示（任意） -->
+    <div class="hint" id="meHint" style="display:none;"></div>
+
     <div id="list" class="list"></div>
   </div>
 
 <script>
 /* =========================================================
-   設定（あなたの構成に固定）
-   kintrE/pages/human_select.html から kintrE/user_db.csv
-========================================================= */
-const CSV_PATH = "../user_db.csv";
-
-/* =========================================================
    共通
 ========================================================= */
 const listEl = document.getElementById("list");
+const meHint = document.getElementById("meHint");
 
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c => ({
@@ -46,98 +31,20 @@ function escapeHtml(s){
 
 function showError(title, detail){
   listEl.innerHTML =
-    `<div class="err"><b>${escapeHtml(title)}</b>\n\n${escapeHtml(detail)}</div>`;
+    `<div class="err"><b>${escapeHtml(title)}</b><pre style="white-space:pre-wrap;margin:8px 0 0;">${escapeHtml(detail)}</pre></div>`;
 }
 
-function norm(s){
-  return String(s)
-    .replace(/^\uFEFF/, "")      // ★BOM除去
-    .replace(/\u3000/g, " ")     // 全角スペース→半角
-    .trim()
-    .toLowerCase();
-}
+function normalizeIconPath(iconUrl){
+  // icon_url が絶対URLならそのまま
+  if(!iconUrl) return "https://via.placeholder.com/54";
+  if(/^https?:\/\//.test(iconUrl)) return iconUrl;
 
-/* =========================================================
-   区切り文字判定：タブ/カンマ/セミコロン/空白
-========================================================= */
-function detectDelimiter(headerLine){
-  const counts = {
-    "\t": (headerLine.match(/\t/g) || []).length,
-    ",":  (headerLine.match(/,/g)  || []).length,
-    ";":  (headerLine.match(/;/g)  || []).length
-  };
-  let best = "\t";
-  for(const k of Object.keys(counts)){
-    if(counts[k] > counts[best]) best = k;
-  }
-  return counts[best] === 0 ? "WS" : best; // 0なら空白区切り
-}
-
-function splitLine(line, delim){
-  line = String(line).replace(/^\uFEFF/, ""); // 念のためBOM除去
-  if(delim === "WS") return line.trim().split(/\s+/).map(s => s.trim());
-  return line.split(delim).map(s => s.trim());
-}
-
-function findKey(headers, candidates){
-  const H = headers.map(norm);
-  for(const c of candidates){
-    const idx = H.indexOf(norm(c));
-    if(idx !== -1) return headers[idx];
-  }
-  return null;
+  // 例: "human/human1.png" を受け取ったら pages/ からは "../human/human1.png"
+  return "../" + String(iconUrl).replace(/^\.?\//, "");
 }
 
 /* =========================================================
-   CSVパース（ヘッダー揺れ対応）
-========================================================= */
-function parseCSV(text){
-  const lines = String(text).replace(/\r/g, "").split("\n").filter(l => l.trim() !== "");
-  if(lines.length < 2) return { users: [], debug: { headerLine: "", delim: "", headers: [] } };
-
-  const headerLine = lines[0];
-  const delim = detectDelimiter(headerLine);
-  const headers = splitLine(headerLine, delim);
-
-  const keyNumber = findKey(headers, ["number", "id", "口座番号"]);
-  const keyName   = findKey(headers, ["name", "氏名", "名前"]);
-  const keyBal    = findKey(headers, ["balance", "残高"]);
-  const keyIcon   = findKey(headers, ["aicon", "icon", "avatar", "image", "img"]);
-
-  const debug = { headerLine, delim, headers, keys: { keyNumber, keyName, keyBal, keyIcon } };
-
-  if(!keyNumber || !keyName || !keyIcon){
-    return { users: null, debug };
-  }
-
-  const users = [];
-  for(let i=1;i<lines.length;i++){
-    const cols = splitLine(lines[i], delim);
-    const obj = {};
-    headers.forEach((h, idx) => obj[h] = cols[idx] ?? "");
-    users.push({
-      number: obj[keyNumber],
-      name: obj[keyName],
-      balance: keyBal ? obj[keyBal] : "",
-      icon: obj[keyIcon]
-    });
-  }
-  return { users, debug };
-}
-
-/* =========================================================
-   画像パス補正
-   - CSVのaiconが「human/human1.png」なら
-     pages/ からは「../human/human1.png」が正しい
-========================================================= */
-function normalizeIconPath(iconPath){
-  if(!iconPath) return "";
-  if(/^https?:\/\//.test(iconPath)) return iconPath;
-  return "../" + iconPath.replace(/^\.?\//, "");
-}
-
-/* =========================================================
-   描画
+   描画（APIの返却: [{id, name, icon_url}, ...]）
 ========================================================= */
 function render(users){
   listEl.innerHTML = "";
@@ -149,113 +56,93 @@ function render(users){
     const img = document.createElement("img");
     img.className = "avatar";
     img.alt = "avatar";
-    img.src = normalizeIconPath(u.icon);
+    img.src = normalizeIconPath(u.icon_url);
 
     const name = document.createElement("div");
     name.className = "name";
-    name.innerHTML = `${escapeHtml(u.name)}<div class="small">口座番号: ${escapeHtml(u.number || "-")}</div>`;
+    name.innerHTML = `${escapeHtml(u.name ?? "")}`;
 
-    // ▼▼ ここが追加（送金ボタン） ▼▼
-    const btn = document.createElement("button");
-    btn.textContent = "送金";
-    btn.style.padding = "8px 14px";
-    btn.style.fontSize = "14px";
-    btn.style.border = "none";
-    btn.style.borderRadius = "8px";
-    btn.style.background = "#007AFF";
-    btn.style.color = "#fff";
-    btn.style.cursor = "pointer";
-
-    // ボタンクリック → 送金画面へ遷移
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();  
-      location.href = "sent tab.html";
-    });
-    // ▲▲ 追加ここまで ▲▲
     const chev = document.createElement("div");
     chev.className = "chev";
     chev.textContent = "›";
 
-    // ★ 送金ボタンをユーザーごとに追加
     row.appendChild(img);
     row.appendChild(name);
-    row.appendChild(btn);   
     row.appendChild(chev);
+
+    // 行クリック：送金画面へ（相手idを渡す）
+    row.addEventListener("click", () => {
+      location.href = `sent tab.html?recipient_id=${encodeURIComponent(u.id)}`;
+    });
 
     listEl.appendChild(row);
   });
 }
 
 /* =========================================================
-   メイン：CSVを自動読み込み
+   メイン
 ========================================================= */
-async function main(){
+(async () => {
+  // ★あなたのコード：URLから自分の口座番号を取得
+  const params = new URLSearchParams(location.search);
+  const myAccountNumber = params.get("number");
+
+  // デバッグ表示
+  console.log("口座番号:", myAccountNumber);
+
+  // URLに無ければ localStorage から補助的に拾う（任意）
+  const fallback = localStorage.getItem("my_account_number");
+  const my = myAccountNumber || fallback;
+
+  if(!my){
+    showError(
+      "自分の口座番号が見つかりません",
+      "例: human_select.html?number=100001 のようにURLに付けて開いてください"
+    );
+    return;
+  }
+
+  // 上部に自分の口座番号を出す（任意）
+  meHint.style.display = "block";
+  meHint.textContent = `あなたの口座番号：${my}`;
+
   try{
-    const res = await fetch(CSV_PATH, { cache: "no-store" });
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const res = await fetch(`/api/recipients?exclude_number=${encodeURIComponent(my)}`, {
+      cache: "no-store",
+      headers: { "Accept": "application/json" }
+    });
 
-    const csvText = await res.text();
+    const ct = res.headers.get("content-type") || "";
+    const text = await res.text();
 
-    // デバッグ：先頭行を可視化（BOM/文字化け確認）
-    const firstLine = csvText.replace(/\r/g,"").split("\n").find(l => l.trim() !== "") || "";
-    console.log("RAW HEADER:", firstLine);
-    console.log("RAW HEADER (escaped):", JSON.stringify(firstLine));
+    if(!res.ok){
+      showError("APIエラー", `HTTP ${res.status}\n${text}`);
+      return;
+    }
 
-    const { users, debug } = parseCSV(csvText);
+    if(!ct.includes("application/json")){
+      showError("APIエラー", "JSON以外が返ってきました（APIが動いていない可能性）");
+      return;
+    }
 
-    if(users === null){
-      showError(
-        "CSVヘッダーが認識できません",
-        [
-          `試したパス: ${CSV_PATH}`,
-          "",
-          "認識できたヘッダー（そのまま表示）:",
-          debug.headers.join(" | "),
-          "",
-          "ヘッダー先頭行（escaped）:",
-          JSON.stringify(debug.headerLine),
-          "",
-          "区切り推定:",
-          String(debug.delim),
-          "",
-          "検出キー:",
-          JSON.stringify(debug.keys, null, 2),
-          "",
-          "対処:",
-          "・CSVを UTF-8（BOMなし）で保存",
-          "・ヘッダーを number,name,balance,aicon に合わせる（aicon でも icon でも可）",
-          "・区切りはタブ or カンマ推奨"
-        ].join("\n")
-      );
+    const users = JSON.parse(text);
+
+    if(!Array.isArray(users)){
+      showError("APIエラー", "返却が配列ではありません");
       return;
     }
 
     if(users.length === 0){
-      showError("CSVは読めましたがデータ行がありません", "CSVの2行目以降にデータがあるか確認してください");
+      showError("送金先がありません", "自分以外のユーザーが登録されていない可能性があります");
       return;
     }
 
     render(users);
 
-  }catch(e){
-    showError(
-      "CSVが読み込めません",
-      [
-        `試したパス: ${CSV_PATH}`,
-        "",
-        "確認:",
-        "・GitHub Pages（https://<user>.github.io/...）で開いている",
-        "・kintrE/user_db.csv が存在",
-        "",
-        "詳細:",
-        e.message
-      ].join("\n")
-    );
-    console.error(e);
+  } catch(e){
+    showError("通信エラー", "APIに接続できませんでした");
   }
-}
-
-main();
+})();
 </script>
 </body>
 </html>
