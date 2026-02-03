@@ -10,7 +10,7 @@
     {
       "binding": "DB",           // ← コード内で context.env.DB と呼ぶための名前
       "database_name": "kintre-db",
-      "database_id": "ここにIDを貼る" // ← IDを忘れずに！
+      "database_id": "ddfc8333-2506-4d9e-ad31-b208a3f0c2b3" // ← IDを忘れずに！
     }
   ]
 }
