@@ -1,4 +1,4 @@
-// GET /api/users でアクセスされたら動く
+// ユーザーを全取得するAPI
 export async function onRequestGet(context) {
   const db = context.env.DB; // 操作担当者が設定した"DB"という名前を使う
 
