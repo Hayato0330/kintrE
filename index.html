@@ -64,7 +64,7 @@
       const accountNumber = "10001"; // ここを固定で10001にする
 
       try {
-        const res = await fetch(`/api/account?number=${encodeURIComponent(accountNumber)}`);
+        const res = await fetch(`/api/accounts?number=${encodeURIComponent(accountNumber)}`);
         const data = await res.json();
 
         if (!res.ok) {
