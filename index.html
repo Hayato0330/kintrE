@@ -53,12 +53,39 @@
                     </div>
                   </div> 
 
-                  <script>
-  document.getElementById("requestBtn").addEventListener("click", () => {
-    location.href = "pages/7-1.html";
-  });
-</script>
+  <script>
+    document.getElementById("requestBtn").addEventListener("click", () => {
+      location.href = "pages/7-1.html";
+    });
+  </script>
         </div>
+  <script>
+    (async () => {
+      const accountNumber = "10001"; // ここを固定で10001にする
+
+      try {
+        const res = await fetch(`/api/account?number=${encodeURIComponent(accountNumber)}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          document.getElementById("msg").textContent = data?.error ?? "読み込みに失敗しました";
+          return;
+        }
+
+        // 表示更新
+        document.getElementById("user-name").textContent = data.name ?? "---";
+        document.getElementById("account-number").textContent = data.account_number ?? accountNumber;
+        document.getElementById("limit").textContent = Number(data.balance ?? 0).toLocaleString("ja-JP");
+
+        // アイコン（aiconをicon_urlとして返している想定）
+        const icon = data.icon_url ?? "https://via.placeholder.com/60";
+        document.getElementById("user_icon").src = icon;
+
+      } catch (e) {
+        document.getElementById("msg").textContent = "通信エラーです";
+      }
+    })();
+  </script>
 
         </body> 
- </html> 
+</html> 

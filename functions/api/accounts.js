@@ -15,9 +15,18 @@ export async function onRequestGet(context) {
   try {
     // 2. データベースから検索
     // "SELECT 名前, 残高, アイコン FROM Users WHERE 口座番号 = ?"
-    const user = await db.prepare(
-      "SELECT name, balance, icon_url FROM Users WHERE account_number = ?"
-    ).bind(accountNumber).first();
+    const user = await db
+      .prepare(
+        `SELECT
+           name,
+           balance,
+           aicon AS icon_url,
+           number AS account_number
+         FROM Users
+         WHERE number = ?`
+      )
+      .bind(accountNumber)
+      .first();
 
     // ユーザーが見つからなかった場合
     if (!user) {
