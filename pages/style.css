@@ -492,20 +492,20 @@ input[type="number"]:focus{
   cursor:pointer;
   background-color: rgb(214, 238, 255); /* 薄い青 */
   white-space:nowrap;
-  color: #0275d8;
+  color: #111;
 }
 
 /* スマホのタップ中（ここが一番重要） */
 .hide-btn:active{
   background-color: rgb(200, 2, 40);
-  color: #0275d8;;
+  color: white;
 }
 
 /* ★クリック後に赤が残らないように強制リセット */
 .hide-btn:focus,
 .hide-btn:focus-visible{
   background-color: rgb(214, 238, 255) !important; /* 薄い青に戻す */
-  color:white !important;
+  color:#111 !important;
   outline:none !important;
   box-shadow:none !important;
 }
@@ -551,6 +551,7 @@ input[type="number"]:focus{
   cursor: pointer;
   background-color:  rgb(214, 238, 255);
   font-weight: 600;
+  color: #111;
 }
 
 .row.balance-money-row .hide-btn:hover{
@@ -566,7 +567,7 @@ input[type="number"]:focus{
 @media (hover: none) {
   .hide-btn:hover{
     background-color: rgb(214, 238, 255) !important;
-    color: #0275d8;
+    color: #111;
   }
 }
 
