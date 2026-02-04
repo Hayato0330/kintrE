@@ -172,10 +172,11 @@ function render(users){
     btn.addEventListener("click", (e) => {
       e.stopPropagation(); 
 
-      const from = window.myAccountNumber; // ← これにする
+      const from = sessionStorage.getItem('target_account_number');
       const to = u.number;
+      sessionStorage.setItem('send_to_account', to);
       
-      location.href = `./sent tab.html?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+      location.href = `./sent tab.html`;
     });
     // ▲▲ 追加ここまで ▲▲
     const chev = document.createElement("div");
@@ -192,17 +193,17 @@ function render(users){
   });
 }
 
-window.myAccountNumber = new URLSearchParams(location.search).get("number");
-if (!window.myAccountNumber) {
-  showError("口座番号が渡っていません", "送金ボタンから入り直してください。");
-} else {
+const myAcct = sessionStorage.getItem('target_account_number');
+if (!myAcct) {
+      showError("エラー", "口座番号が見つかりません。もう一度トップページから操作してください。");
+    }else {
   main();
 }
 
 async function main(){
   try{
     // ★ CSVではなくDB APIへ
-    const res = await fetch(`/api/recipients?exclude_number=${encodeURIComponent(window.myAccountNumber)}`, {
+    const res = await fetch(`/api/recipients?exclude_number=${encodeURIComponent(myAcct)}`, {
       cache: "no-store"
     });
     const data = await res.json();

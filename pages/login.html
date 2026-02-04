@@ -2,10 +2,10 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ログイン</title>
 
-  <!-- 請求内容の確認ページと同じCSSを使う -->
+  <!-- 作成完了ページと同じCSSを使う -->
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -13,43 +13,94 @@
   <div class="phone">
     <div class="screen">
 
-      <!-- 見た目の雰囲気を合わせる（to-headerを流用） -->
-      <header class="to-header">
-        <div class="to-name">ログイン</div>
-        <div class="to-id">口座番号を入力してください</div>
-      </header>
+      <!-- ★ 中央寄せ（作成完了ページと同じ） -->
+      <div style="
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        text-align:left;
+        padding:20px;
+        width:100%;
+        box-sizing:border-box;
+      ">
 
-      <hr style="border:none;border-top:1px solid #eee;margin:12px 0;">
+        <!-- タイトル -->
+        <div class="to-name" style="font-size:22px;font-weight:800;margin-bottom:10px; width:100%;">
+          ログイン
+        </div>
 
-      <!-- 口座番号 -->
-      <div class="row" style="margin-top:8px;">
-        <div class="label">口座番号</div>
-        <!-- style.css が input[type="number"] に当たるので number に合わせる -->
-        <input id="number" type="number" inputmode="numeric" placeholder="例: 100001">
+        <!-- サブテキスト -->
+        <div class="to-id" style="font-size:14px;color:#555;margin-bottom:22px; width:100%;">
+          口座番号を入力してください
+        </div>
+
+        <!-- 入力欄（横長100%） -->
+        <div style="width:100%; margin-bottom:14px;">
+          <div class="label" style="margin-bottom:6px;">口座番号</div>
+
+          <!-- style.css が input[type="number"] を装飾しているので number に合わせる -->
+          <input
+            id="number"
+            type="number"
+            inputmode="numeric"
+            placeholder="例: 100001"
+            style="width:100%; box-sizing:border-box;"
+          />
+        </div>
+
+        <!-- ★ 通知メッセージ用スペース（ズレ防止） -->
+        <div id="msg" style="
+          width:100%;
+          margin-bottom:16px;
+          min-height:22px;
+          line-height:22px;
+          font-size:14px;
+          color:#c00;
+        "></div>
+
+        <!-- ログイン -->
+        <button class="primary" id="loginBtn"
+          style="width:100%; box-sizing:border-box; margin-bottom:12px;">
+          ログイン
+        </button>
+
+        <!-- 戻る / 例：トップへ -->
+        <button class="primary" id="backBtn"
+          style="width:100%; box-sizing:border-box;">
+          トップ画面に戻る
+        </button>
+
       </div>
-
-      <!-- ログインボタン：配置とサイズはstyle.cssの.primaryに任せる -->
-      <button class="primary" id="loginBtn">ログイン</button>
-
-      <!-- メッセージ -->
-      <div id="msg" style="color:red;margin-top:12px;"></div>
 
     </div>
   </div>
 
   <script>
+    let msgTimer = null;
+
+    function showMsg(text) {
+      const el = document.getElementById("msg");
+      el.textContent = text;
+
+      if (msgTimer) clearTimeout(msgTimer);
+      msgTimer = setTimeout(() => {
+        el.textContent = "";
+      }, 2500);
+    }
+
     document.getElementById("loginBtn").addEventListener("click", async () => {
       const number = document.getElementById("number").value.trim();
       const msgEl  = document.getElementById("msg");
       msgEl.textContent = "";
 
       if (!number) {
-        msgEl.textContent = "口座番号を入力してください";
+        showMsg("口座番号を入力してください");
         return;
       }
 
       try {
-        // /api/login?number=... を呼ぶ（あなたの仕様に合わせる）
         const apiUrl = new URL("/api/login", window.location.origin);
         apiUrl.searchParams.set("number", number);
 
@@ -57,21 +108,28 @@
         const data = await res.json();
 
         if (!res.ok || !data.ok) {
-          msgEl.textContent = data?.error ?? `ログイン失敗 (status ${res.status})`;
+          showMsg(data?.error ?? `ログイン失敗 (status ${res.status})`);
           return;
         }
 
-        // ログイン情報を保存（あなたの他ページが sessionStorage.user_id を使っているので合わせる）
+        // 他ページが sessionStorage.user_id を使っている前提で保存
         sessionStorage.setItem("user_id", String(data.number ?? number));
 
-        // 次ページへ
-        location.href = `8.html?number=${encodeURIComponent(data.number ?? number)}`;
-
+        // ログイン後遷移
+        //location.href = `8.html?number=${encodeURIComponent(data.number ?? number)}`;
+          location.href = `8.html?bill_id=${billId}`;
+          
       } catch (e) {
-        msgEl.textContent = "通信エラーです";
+        showMsg("通信エラーです");
         console.error(e);
       }
     });
+
+    document.getElementById("backBtn").addEventListener("click", () => {
+      location.href = "../index.html";
+    });
+
+    
   </script>
 </body>
 </html>
