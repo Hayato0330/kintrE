@@ -9,25 +9,84 @@
 
 <body>
   <div class="phone">
-    <div class="screen">
-      <div class="content">
-        <!-- ログインタイトルや入力欄など “上側” をここに入れる -->
-        <h1>ログイン</h1>
-    
-        <div class="msg">
-          <input type="number" placeholder="口座番号 例: 100001">
+    <!-- 画面を縦に並べる -->
+    <div class="screen" style="
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+      justify-content:center; /* ★中央寄せ（口座番号が中央に来る） */
+      padding:20px;
+    ">
+
+      <!-- タイトルを右上に置く -->
+      <div style="
+        width:100%;
+        display:flex;
+        justify-content:flex-end; /* ★右寄せ */
+        margin-bottom:20px;
+      ">
+        <h2 style="margin:0;">ログイン</h2>
+      </div>
+
+      <!-- 中央の入力欄 -->
+      <div style="width:100%; max-width:420px; margin:0 auto;">
+        <div class="row">
+          <div class="label">口座番号</div>
+          <input id="number" type="text" placeholder="例: 100001" style="flex:1;">
         </div>
       </div>
-    
-      <div class="actions">
-        <!-- “下側” に置きたいボタンをここに入れる -->
-        <button class="primary">ログイン</button>
+
+      <!-- 下のログインボタン -->
+      <div style="
+        padding:40px 0 40px;
+        width:100%;
+        display:flex;
+        justify-content:center;
+      ">
+        <button class="primary" id="loginBtn"
+          style="
+            width:80%;
+            max-width:300px;
+            font-size:20px;
+            font-weight:700;
+            padding:14px 0;
+            border-radius:14px;
+            border:0;
+            background:#007bff;
+            color:white;
+            transition:0.15s;
+          "
+        >
+          ログイン
+        </button>
       </div>
+
+      <div id="msg" style="margin-top:10px;color:#c00;"></div>
     </div>
   </div>
 
   <script>
-    /* --- あなたのログイン処理 --- */
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const number = document.getElementById("number").value.trim();
+      const msgEl  = document.getElementById("msg");
+      msgEl.textContent = "";
+
+      try {
+        const apiUrl = new URL("/api/login", window.location.origin);
+        apiUrl.searchParams.set("number", number);
+        const res = await fetch(apiUrl.toString(), { method: "GET" });
+        const data = await res.json();
+
+        if (!res.ok || !data.ok) {
+          msgEl.textContent = data?.error ?? `ログイン失敗 (status ${res.status})`;
+          return;
+        }
+
+        location.href = `8.html?number=${encodeURIComponent(data.number)}`;
+      } catch (e) {
+        msgEl.textContent = `通信エラー: ${e?.message ?? e}`;
+      }
+    });
   </script>
 </body>
 </html>

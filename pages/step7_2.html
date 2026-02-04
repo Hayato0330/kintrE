@@ -62,8 +62,10 @@
   </div>
 
   <script>
-    /* 表示はしないがコピーする対象 */
-    const requestLink = "https://example.com/pay?id=12345";
+    const requestLink = sessionStorage.getItem('created_payment_link') || "リンクが見つかりません";
+    
+    console.log("コピー対象:", requestLink);
+
     let msgTimer = null;
 
     function copyLink() {
