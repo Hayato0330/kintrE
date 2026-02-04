@@ -1,10 +1,12 @@
-export async function onRequestGet(context) {
+export async function onRequestPost(context) {
   const db = context.env.DB;
 
-  const url = new URL(context.request.url);
-  const number = String(url.searchParams.get("number") ?? "").trim();
-  const password = String(url.searchParams.get("password") ?? "").trim();
+ const { number, password } = await context.request.json();
 
+ if (!number || !password) {
+      return Response.json({ ok: false, error: "未入力の項目があります" }, { status: 400 });
+    }
+    
   try {
     const user = await db
       .prepare("SELECT password FROM Users WHERE number = ?")
