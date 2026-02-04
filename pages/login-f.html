@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ログイン画面</title>
+
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="phone">
+    <div class="screen">
+
+       <div style="
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        text-align:left;
+        padding:20px;
+        width:100%;
+        box-sizing:border-box;
+      ">
+
+        
+        <div class="to-name" style="font-size:22px;font-weight:800;margin-bottom:10px; width:100%;">
+          ログイン画面
+        </div>
+
+        <!-- サブテキスト -->
+        <div class="to-id" style="font-size:14px;color:#555;margin-bottom:22px; width:100%;">
+          口座番号 PASSWORD 入力してください
+        </div>
+
+
+        <div style="width:100%; margin-bottom:14px;">
+          <div class="label" style="margin-bottom:6px;">口座番号</div>
+
+          <input
+            id="account_number"
+            type="number"
+            inputmode="numeric"
+            placeholder="例: 100001"
+            style="width:100%; box-sizing:border-box;"
+          />
+        </div>
+
+      
+
+        <div style="width:100%; margin-bottom:14px;">
+          <div class="label" style="margin-bottom:6px;">PASSWORD</div>
+
+          <input
+            id="password"
+            type="password"
+            inputmode="numeric"
+            placeholder="PASSWORD"
+            style="width:100%; box-sizing:border-box;"
+          />
+        </div>
+  
+
+        <div id="msg" style="
+          width:100%;
+          margin-bottom:16px;
+          min-height:22px;
+          line-height:22px;
+          font-size:14px;
+          color:#c00;
+        "></div>
+
+        <!-- ログイン -->
+        <button class="primary" id="loginBtn"
+          style="width:100%; box-sizing:border-box; margin-bottom:12px;">
+          ログイン
+        </button>
+
+
+
+      </div>
+
+    </div>
+  </div>
+  </body>
+  </html>

@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>請求内容の確認</title>
   <link rel="stylesheet" href="style.css">
   <script src="main.js" defer></script>
@@ -91,6 +92,9 @@
     }
   })();
 
+
+
+
   // 送金ボタンのクリックイベント
   document.getElementById("sendBtn").addEventListener("click", async () => {
     // sessionStorageからログインユーザーのIDを取得
@@ -143,6 +147,8 @@
     }
   });
 </script>
+
+ 
 <script>
   (async () => {
     // URLパラメータからnumberを取得
@@ -177,6 +183,72 @@
     }
   })();
   </script>
+
+
+    <!-- 7 送金ボタンクリック時 -->
+<script>
+    btn.addEventListener("click", async () => {
+      const amountInput = document.getElementById("amount");
+      const amount = parseInt(amountInput.value);
+
+      msgDiv.textContent = "";
+
+      // バリデーション
+      if (!amount || amount <= 0) {
+        msgDiv.textContent = "正しい金額を入力してください。";
+        return;
+      }
+      if (amount > senderData.balance) {
+        msgDiv.textContent = "残高不足です。";
+        return;
+      }
+
+      // 二重送信防止
+      btn.disabled = true;
+      btn.textContent = "送金処理中...";
+
+      try {
+        const response = await fetch(API_SEND_MONEY, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sender_id: senderId,
+            recipient_id: recipientId,
+            amount: amount,
+            message: "送金"
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          // alert("送金が完了しました！");
+          // 完了画面へ (ファイル名に合わせてください)
+          location.href = "4.html"; 
+        } else {
+          throw new Error(result.message || result.error || "送金に失敗しました");
+        }
+
+      } catch (error) {
+        msgDiv.textContent = error.message;
+        btn.disabled = false;
+        btn.textContent = "送金する";
+      }
+    });
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <script>
