@@ -1,27 +1,30 @@
-// balance.js
+export async function onRequestGet(context) {
+  const db = context.env.DB;
 
-// URLパラメータから userId を取得
-const params = new URLSearchParams(window.location.search);
-const userId = params.get("userId");
+  const url = new URL(context.request.url);
+  const number = url.searchParams.get("number");
+  
+  if (!number) {
+    return Response.json({ error: "numberが必要です" }, { status: 400 });
+  }
 
-if (!userId) {
-  document.getElementById("limit").textContent = "取得失敗";
-  console.error("userId がURLにありません");
-} else {
-  // users データベースから取得
-  fetch(`/api/users?id=${encodeURIComponent(userId)}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("APIエラー");
-      }
-      return response.json();
-    })
-    .then(user => {
-      // balance（上限金額）を反映
-      document.getElementById("limit").textContent = user.balance;
-    })
-    .catch(error => {
-      console.error(error);
-      document.getElementById("limit").textContent = "エラー";
+  try {
+    //usersテーブルから口座残高を取得
+    const users = await db
+      .prepare("SELECT balance FROM users WHERE number = ?")
+      .bind(number)
+      .first();
+
+    if (!users) {
+      return Response.json({ error: "口座が見つかりません" }, { status: 404 });
+    }
+
+
+    return Response.json({
+      balance: users.balance
     });
+    
+  } catch (e) {
+    return Response.json({ error: e?.message ?? String(e) }, { status: 500 });
+  }
 }
