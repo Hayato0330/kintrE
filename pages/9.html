@@ -71,7 +71,7 @@
         item.className = "list-item";
         item.innerHTML =
           "<div class=\"line1\">" +
-            "<div><b>ID:</b> " + escapeHtml(row.bill_id || "-") + "</div>" +
+            "<div><b>ID:</b> " + escapeHtml(row.url || "-") + "</div>" +
             "<div class=\"status " + status.cls + "\">" + escapeHtml(status.label) + "</div>" +
           "</div>" +
           "<div class=\"line2\">" +

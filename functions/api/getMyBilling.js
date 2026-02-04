@@ -16,7 +16,16 @@ export async function onRequestGet(context) {
       .bind(accountNumber)
       .all();
 
-    return Response.json(results ?? []);
+
+   const formattedResults = (results ?? []).map((bill) => {
+      return {
+        ...bill, // 元のデータ（bill_id, amountなど）をすべてコピー
+        url: `https://kintre-pages.pages.dev/pages/login?${bill.bill_id}` // ★ここでURLを追加
+      };
+    });
+
+    // 3. 加工したデータを返す
+    return Response.json(formattedResults);
   } catch (e) {
     return Response.json({ error: e?.message ?? String(e) }, { status: 500 });
   }
