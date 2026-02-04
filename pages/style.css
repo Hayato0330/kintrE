@@ -38,7 +38,7 @@ body {
 }
 
 .screen {
-  padding: 20px;
+  padding: 30px;
 }
 
 /* ========================================
@@ -113,7 +113,7 @@ input[type="number"]{
 }
 
 input[type="number"]:focus{
-  border-color:#c9c9c9;
+  border-color:#c8c5c5;
 }
 
 /* ========================================
@@ -128,7 +128,7 @@ input[type="number"]:focus{
   border:0;
   border-radius:14px;
   cursor:pointer;
-  background-color: aliceblue;
+  background-color: rgb(255, 240, 240);
   padding: 8px 16px;
 }
 
