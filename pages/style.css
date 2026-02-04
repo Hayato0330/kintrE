@@ -503,3 +503,50 @@ input[type="number"]:focus{
   background-color: rgb(200, 2, 40);
   color: white;
 }
+
+/* ★この行だけ絶対に横並び（rowを上書き） */
+.row.balance-money-row{
+  display: flex !important;
+  flex-direction: row !important;   /* ← ここが最重要 */
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100%;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;     /* 折り返し禁止 */
+}
+
+/* 金額は真ん中寄せ。狭い画面でも折り返さない */
+.row.balance-money-row .money-box{
+  flex: 1 1 auto;
+  text-align: center;
+  white-space: nowrap;
+  /* スマホで確実に収まるように可変サイズにする */
+  font-size: clamp(18px, 7vw, 32px);
+  font-weight: 700;
+}
+
+/* 右のボタンは固定幅で折り返さない＆小さめ */
+.row.balance-money-row .hide-btn{
+  flex: 0 0 auto;
+  white-space: nowrap;
+
+  width: auto;
+  min-height: 36px;
+  padding: 6px 10px;
+  font-size: 13px;
+
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: aliceblue;
+  font-weight: 600;
+}
+
+.row.balance-money-row .hide-btn:hover{
+  background-color: rgb(237, 4, 51);
+  color: #fff;
+}
+.row.balance-money-row .hide-btn:active{
+  background-color: rgb(200, 2, 40);
+  color: #fff;
+}
