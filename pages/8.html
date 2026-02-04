@@ -70,7 +70,7 @@
 
     try {
       // APIを呼び出して請求情報を取得
-      const res = await fetch(`/api/bills?bill_id=${encodeURIComponent(billId)}`);
+      const res = await fetch(`/api/requestbills?bill_id=${encodeURIComponent(billId)}`);
       console.log(res);
       const data = await res.json();
       console.log(data);
@@ -144,7 +144,7 @@
   });
 </script>
 
-<script src="balance.js" defer></script>
+
 
 <script>
   const sendBtn = document.getElementById("sendBtn");
