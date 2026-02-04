@@ -15,7 +15,7 @@ export async function onRequestGet(context) {
     // 2. データベースから検索
     // "自分以外のユーザーの、ID・名前・アイコンを取得"
     const { results } = await db.prepare(
-      "SELECT id, name, icon_url FROM Users WHERE account_number != ?"
+      "SELECT number, name, aicon FROM Users WHERE number != ?"
     ).bind(myAccountNumber).all();
 
     // 3. 結果を返す
