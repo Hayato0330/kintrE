@@ -44,6 +44,12 @@
           font-size:14px;
         "></div>
 
+        <div id="qrWrap" style="margin-top:18px;">
+          <div style="font-size:13px;color:#555;margin-bottom:10px;">QRコード</div>
+          <canvas id="qrCanvas"></canvas>
+          <div id="qrErr" style="margin-top:10px;font-size:13px;color:#c00;"></div>
+        </div>
+
         <!-- リンクコピー -->
         <button class="primary" type="button" onclick="copyLink()"
           style="width:100%; box-sizing:border-box; margin-bottom:12px;">
@@ -91,7 +97,15 @@
     document.getElementById("sendBtn").addEventListener("click", () => {
       location.href = "../index.html";
     });
+
+    
   </script>
+
+  <!-- QR生成ライブラリ（軽くて手軽） -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+  <!-- 自分のQR表示処理 -->
+  <script src="../public/createqr.js"></script>
 
 </body>
 </html>
