@@ -46,11 +46,11 @@
     </div>
   </div>
 
-  <!-- 送金ボタン -->
-  <button class="primary" id="sendBtn">送金する</button>
+ <!-- 送金ボタン -->
+<button class="primary" id="sendBtn">送金する</button>
 
-  <!-- エラーメッセージ表示 -->
-  <div id="msg" style="color:red;margin-top:12px;"></div>
+<!-- エラーメッセージ -->
+<div id="msg" style="color:red;margin-top:12px;"></div>
 </div>
 </div>
 
@@ -144,6 +144,52 @@
 
 <script src="balance.js" defer></script>
 
+<script>
+  const sendBtn = document.getElementById("sendBtn");
+  const msg = document.getElementById("msg");
+
+  // URLから bill_id を取得
+  const params = new URLSearchParams(window.location.search);
+  const billId = params.get("bill_id");
+
+  sendBtn.addEventListener("click", async () => {
+    if (!billId) {
+      msg.textContent = "bill_idが取得できません";
+      return;
+    }
+
+    sendBtn.disabled = true;
+    msg.textContent = "送金処理中…";
+
+    try {
+      const res = await fetch("/api/pay", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          bill_id: billId
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        msg.textContent = data.error || "送金に失敗しました";
+        sendBtn.disabled = false;
+        return;
+      }
+
+      // 成功 → 完了画面へ
+      window.location.href = "4.html";
+
+    } catch (e) {
+      console.error(e);
+      msg.textContent = "通信エラーです";
+      sendBtn.disabled = false;
+    }
+  });
+</script>
 
 </body>
 </html>

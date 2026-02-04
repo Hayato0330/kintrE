@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>請求状況確認</title>
   <link rel="stylesheet" href="style.css">
+  <script src="main.js" defer></script>
 </head>
 
 <body>
@@ -15,41 +16,41 @@
   <ul id="list"></ul>
 
 <script>
-const USER_CSV = "../user_db.csv";
-const REQUEST_CSV = "../request_db.csv";
+// const USER_CSV = "../user_db.csv";
+// const REQUEST_CSV = "../request_db.csv";
 
-function parseCSV(text){
-  const lines = text.replace(/\r/g,"").split("\n").filter(l => l.trim() !== "");
-  if(lines.length < 2) return [];
+// function parseCSV(text){
+//   const lines = text.replace(/\r/g,"").split("\n").filter(l => l.trim() !== "");
+//   if(lines.length < 2) return [];
 
-  const headers = lines[0].split(",").map(h => h.trim());
-  const data = [];
+//   const headers = lines[0].split(",").map(h => h.trim());
+//   const data = [];
 
-  for(let i=1;i<lines.length;i++){
-    const cols = lines[i].split(",").map(c => c.trim());
-    const obj = {};
-    headers.forEach((h, idx) => {
-      obj[h] = cols[idx] || "";
-    });
-    data.push(obj);
-  }
-  return data;
-}
+//   for(let i=1;i<lines.length;i++){
+//     const cols = lines[i].split(",").map(c => c.trim());
+//     const obj = {};
+//     headers.forEach((h, idx) => {
+//       obj[h] = cols[idx] || "";
+//     });
+//     data.push(obj);
+//   }
+//   return data;
+// }
 
-async function main(){
-  const messageEl = document.getElementById("message");
-  const listEl = document.getElementById("list");
+// async function main(){
+//   const messageEl = document.getElementById("message");
+//   const listEl = document.getElementById("list");
 
-  try{
-    const userRes = await fetch(USER_CSV, { cache: "no-store" });
-    const reqRes  = await fetch(REQUEST_CSV, { cache: "no-store" });
+//   try{
+//     const userRes = await fetch(USER_CSV, { cache: "no-store" });
+//     const reqRes  = await fetch(REQUEST_CSV, { cache: "no-store" });
 
-    if(!userRes.ok || !reqRes.ok){
-      throw new Error("CSVが読み込めません");
-    }
+//     if(!userRes.ok || !reqRes.ok){
+//       throw new Error("CSVが読み込めません");
+//     }
 
-    const users = parseCSV(await userRes.text());
-    const requests = parseCSV(await reqRes.text());
+//     const users = parseCSV(await userRes.text());
+//     const requests = parseCSV(await reqRes.text());
 
     // request が0件
     if(requests.length === 0){
@@ -83,11 +84,37 @@ async function main(){
       listEl.appendChild(li);
     });
 
+  // }
+  //  catch(e){
+  //   messageEl.textContent = "請求データはありません（読み込み失敗）";
+  //   console.error(e);
+  // }
+// }
+ async function main(){
+  try{
+    // ★ CSVではなくDB APIへ
+    const res = await fetch(`/api/getMyBilling?include_number=${encodeURIComponent(window.myAccountNumber)}`, {
+      cache: "no-store"
+    });
+    const data = await res.json();
+
+    if(!res.ok){
+      showError("送金相手の取得に失敗", data?.error ?? "不明なエラー");
+      return;
+    }
+
+    if(!Array.isArray(data) || data.length === 0){
+      showError("送金相手がいません", "DBに自分以外のユーザーが登録されているか確認してください。");
+      return;
+    }
+
+    render(data);
+
   }catch(e){
-    messageEl.textContent = "請求データはありません（読み込み失敗）";
-    console.error(e);
+    showError("通信エラー", e?.message ?? String(e));
   }
 }
+
 
 main();
 </script>
