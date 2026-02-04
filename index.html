@@ -28,11 +28,10 @@
 
         <!-- 金額 + ボタン（2行目に横並び） -->
         <div class="row balance-money-row">
-          <div class="value money-box">
-            <span id="limit">0</span> 円
-          </div>
+          <span id="limit">0</span> 円
+        </div>
 
-          <button id="toggle-visibility" class="hide-btn">
+          <button id="toggle-visibility" class="primary style="width:auto;min-height:40px;font-size:14px;padding:6px 12px;margin-top:10px;">
             非表示
           </button>
         </div>
@@ -82,7 +81,7 @@
 
       if (!isHidden) {
         // 非表示へ
-        limitEl.textContent = "---,---円";
+        limitEl.textContent = "---,---";
         btn.textContent = "表示";
         isHidden = true;
       } else {
