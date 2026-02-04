@@ -25,8 +25,18 @@
         <div class="row">
           <div class="label">残高</div>
         </div>
+
+        <!-- ★ 金額 + 表示切替ボタン -->
         <div class="row balance-center">
-          <div class="value"><span id="limit">0</span> 円</div>
+          <div class="value">
+            <span id="limit">0</span> 円
+          </div>
+
+          <!-- 切替ボタン -->
+          <button id="toggle-visibility" class="primary" 
+            style="width:auto;min-height:40px;font-size:14px;padding:6px 12px;margin-top:10px;">
+            非表示
+          </button>
         </div>
 
         <hr style="border:none;border-top:1px solid #eee;margin:12px 0;" />
@@ -46,17 +56,15 @@
   </div>
 
   <script>
-    // 0 → 残高 へカウントアップ表示（高速）
-    function animateCount(el, to, durationMs = 300) {
+    /* ------------ 金額アニメーション ------------- */
+    function animateCount(el, to, durationMs = 500) {
       const start = 0;
       const end = Math.max(0, Math.floor(Number(to) || 0));
       const startTime = performance.now();
 
       function tick(now) {
         const t = Math.min(1, (now - startTime) / durationMs);
-        // 最初速く、最後ゆっくり（体感が良い）
         const eased = 1 - Math.pow(1 - t, 3);
-
         const current = Math.floor(start + (end - start) * eased);
         el.textContent = current.toLocaleString("ja-JP");
 
@@ -65,7 +73,28 @@
       requestAnimationFrame(tick);
     }
 
-    // ボタン遷移（口座番号を sessionStorage に保存）
+    /* ------------ 残高表示の ON / OFF 切替 ------------- */
+    let isHidden = false;
+    let realBalance = 0;
+
+    document.getElementById("toggle-visibility").addEventListener("click", () => {
+      const limitEl = document.getElementById("limit");
+      const btn = document.getElementById("toggle-visibility");
+
+      if (!isHidden) {
+        // 非表示へ
+        limitEl.textContent = "＊＊＊";
+        btn.textContent = "表示";
+        isHidden = true;
+      } else {
+        // 表示へ復帰
+        limitEl.textContent = realBalance.toLocaleString("ja-JP");
+        btn.textContent = "非表示";
+        isHidden = false;
+      }
+    });
+
+    /* ------------ ボタン遷移 ------------- */
     document.getElementById("sendBtn").addEventListener("click", () => {
       const acct =
         window.currentAccountNumber ??
@@ -99,9 +128,9 @@
       location.href = "pages/9.html";
     });
 
-    // 口座情報取得 & 表示
+    /* ------------ APIから口座情報取得 ------------- */
     (async () => {
-      const accountNumber = "100001"; // 固定
+      const accountNumber = "100001";
 
       try {
         const res = await fetch(
@@ -115,15 +144,13 @@
           return;
         }
 
-        // 名前・口座番号
         document.getElementById("user-name").textContent = data.name ?? "---";
         document.getElementById("account-number").textContent =
           data.account_number ?? accountNumber;
 
-        // 残高（アニメーション）
-        const bal = Number(data.balance ?? 0);
-        const limitEl = document.getElementById("limit");
-        animateCount(limitEl, bal, 500);
+        // 残高
+        realBalance = Number(data.balance ?? 0);
+        animateCount(document.getElementById("limit"), realBalance, 500);
 
         window.currentAccountNumber = data.account_number ?? accountNumber;
 
