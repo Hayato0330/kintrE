@@ -85,7 +85,7 @@
     }
 
     async function main() {
-      const accountNumber = new URLSearchParams(location.search).get("number");
+      const accountNumber =sessionStorage.getItem('target_account_number');
 
       if (!accountNumber) {
         showError("口座番号がありません", "URL に ?number=100001 のように付けて開いてください。");
