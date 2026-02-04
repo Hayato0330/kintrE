@@ -498,7 +498,7 @@ input[type="number"]:focus{
 /* スマホのタップ中（ここが一番重要） */
 .hide-btn:active{
   background-color: rgb(200, 2, 40);
-  color: white;
+  color: #0275d8;;
 }
 
 /* ★クリック後に赤が残らないように強制リセット */
