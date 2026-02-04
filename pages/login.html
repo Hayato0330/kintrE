@@ -57,7 +57,7 @@
         }
   
         // ✅ 認証OK → 8.htmlへ（login.htmlが /pages 配下なら ../8.html が安全）
-        location.href = `../8.html?number=${encodeURIComponent(data.number)}`;
+        location.href = `pages/8.html?number=${encodeURIComponent(data.number)}`;
   
       } catch (e) {
         msgEl.textContent = `通信エラー: ${e?.message ?? e}`;
