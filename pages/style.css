@@ -1,7 +1,20 @@
+/* ========================================
+   全体リセット & CSS変数
+   ======================================== */
+* { box-sizing: border-box; }
 
+:root{
+  --border:#e7e7e7;
+  --text:#111;
+  --muted:#6b6b6b;
+  --danger:#b00020;
+  --ok:#0a7a2f;
+  --bg:#ffffff;
+}
 
-
-/* 全体：スマホで余白と文字の読みやすさを調整 */
+/* ========================================
+   body
+   ======================================== */
 body {
   margin: 0;
   background: #f5f5f5;
@@ -9,7 +22,9 @@ body {
   color: #222;
 }
 
-/* メイン画面 */
+/* ========================================
+   スマホフレーム
+   ======================================== */
 .phone {
   max-width: 480px;
   margin: 0 auto;
@@ -17,69 +32,119 @@ body {
   min-height: 100vh;
 }
 
-/* 余白 */
 .screen {
   padding: 20px;
 }
 
+/* ========================================
+   カード
+   ======================================== */
 .card {
-max-width: 560px;
-width: 100%;
-margin: 0 auto;
-padding: 16px;
-border-radius: 14px;
+  max-width: 560px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px;
+  border-radius: 14px;
 }
 
-/* タップしやすさ（ボタン/入力） */
+/* ========================================
+   タップしやすさ（ボタン/入力共通）
+   ======================================== */
 button, input {
-font-size: 16px; /* iOSの自動ズーム回避 */
+  font-size: 16px;
 }
 
 button {
-min-height: 48px; /* タップ領域 */
+  min-height: 48px;
 }
 
-input[type="number"] {
-width: 100%;
-min-height: 48px;
-box-sizing: border-box;
+/* ========================================
+   行レイアウト
+   ======================================== */
+/* 送金・請求エリア：ボタンを縦に並べる */
+.actions {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-/* 行の基本：スマホで折り返せるようにする */
+/* 各ラベル＋ボタン組み合わせも縦組み */
 .row {
-flex-wrap: wrap;
-gap: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
 }
 
-/* 画面が狭い場合は「左右レイアウト→縦レイアウト」へ */
-@media (max-width: 480px) {
-body { padding: 12px; }
-
-.card { padding: 14px; }
-
-.row {
-flex-direction: column;
-align-items: stretch; /* 横幅いっぱい使う */
+.label{
+  font-size:13px;
+  color:var(--muted);
+  letter-spacing:.02em;
 }
 
-.label {
-font-size: 13px;
+.value{
+  font-size:20px;
+  font-weight:700;
 }
 
-.value {
-width: 100%;
-text-align: left; /* 右寄せをやめる */
-font-size: 18px;
+.muted{
+  margin-top:4px;
+  font-size:12px;
+  color:var(--muted);
 }
 
-/* 送金額入力のブロック（あなたの row align-items:flex-end を上書き） */
-.row[style*="align-items:flex-end"] {
-align-items: stretch !important;
+/* ========================================
+   入力フィールド
+   ======================================== */
+input[type="number"]{
+  width:100%;
+  min-height:48px;
+  padding:12px 12px;
+  font-size:16px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  outline:none;
 }
 
-h2 { font-size: 18px; }
+input[type="number"]:focus{
+  border-color:#c9c9c9;
 }
 
+/* ========================================
+   プライマリボタン
+   ======================================== */
+.primary{
+  width:100%;
+  min-height:52px;
+  margin-top:14px;
+  font-size:16px;
+  font-weight:800;
+  border:0;
+  border-radius:14px;
+  cursor:pointer;
+  background-color: aliceblue;
+  padding: 8px 16px;
+}
+
+.primary:hover {
+  background-color: rgb(237, 4, 51);
+  color: white;
+}
+
+.primary:active {
+  background-color: rgb(200, 2, 40);
+  color: white;
+}
+
+.primary:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+/* ========================================
+   ヘッダー（送金先・請求元など）
+   ======================================== */
 .to-header{
   position: sticky;
   top: 0;
@@ -104,129 +169,277 @@ h2 { font-size: 18px; }
   color: #555;
 }
 
-
-* { box-sizing: border-box; }
-
-:root{
-  --border:#e7e7e7;
-  --text:#111;
-  --muted:#6b6b6b;
-  --danger:#b00020;
-  --ok:#0a7a2f;
-  --bg:#ffffff;
-}
-
-body {
-  margin: 0;
-  background: #f5f5f5;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
-  color: #222;
-}
-
-/* メイン画面 */
-.phone {
-  max-width: 480px;
-  margin: 0 auto;
-  background: #fff;
-  min-height: 100vh;
-}
-
-/* 余白 */
-.screen {
-  min-height: 100vh;              /* 画面いっぱい */
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;   /* ← 縦方向の中央 */
-  align-items: center;        /* ← 横方向の中央 */
-}
-
-button.primary {
-  background-color: aliceblue;
-  border:none;
-  padding: 8px 16px;
-}
-
-button.primary:hover {
-  background-color: rgb(237, 4, 51);
-  color: white;
-}
-
-button.primary:active {
-  background-color: rgb(200, 2, 40);
-  color: white;
- 
-}
-
-.row{
-  display:flex;
-  flex-direction:column;  
-  gap:6px;
-  padding:12px 0;
-}
-
-.label{
-  font-size:13px;
-  color:var(--muted);
-  letter-spacing:.02em;
-}
-
-.value{
-  font-size:20px;
-  font-weight:700;
-}
-
-
-.muted{
-  margin-top:4px;
-  font-size:12px;
-  color:var(--muted);
-}
-
-input[type="number"]{
-  width:100%;
-  min-height:48px;
-  padding:12px 12px;
-  font-size:16px;
-  border:1px solid var(--border);
-  border-radius:12px;
-  outline:none;
-}
-
-input[type="number"]:focus{
-  border-color:#c9c9c9;
-}
-
-
-.primary{
-  width:100%;
-  min-height:52px;
-  margin-top:14px;
-  font-size:16px;
-  font-weight:800;
-  border:0;
-  border-radius:14px;
-  cursor:pointer;
-}
-
-
-.primary:disabled{
-  opacity:.55;
-  cursor:not-allowed;
-}
-
-
+/* ========================================
+   メッセージ
+   ======================================== */
 #msg{
   margin-top:10px;
   font-size:13px;
   line-height:1.4;
 }
 
-
 #msg.err{ color:var(--danger); }
 #msg.ok{ color:var(--ok); }
 
+/* ========================================
+   【追加】完了画面用
+   ======================================== */
+.completion-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 80px;
+}
 
+.completion-wrap img {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 24px;
+}
+
+.completion-wrap h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 32px;
+  color: var(--text);
+}
+
+/* 完了画面の「戻る」ボタン：枠付き・背景透明 */
+.btn-outline {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 0;
+  font-size: 16px;
+  font-weight: 600;
+  border: 1.5px solid #ccc;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+  padding: 0 16px;
+}
+
+.btn-outline:hover {
+  background: #f5f5f5;
+}
+
+/* ========================================
+   【追加】リスト行（人選択画面）
+   ======================================== */
+.list-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  background: #fff;
+}
+
+.list-row:hover {
+  background: #fafafa;
+}
+
+.list-row .avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  object-fit: cover;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.list-row .name {
+  font-size: 18px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.list-row .chev {
+  color: #bbb;
+  font-size: 22px;
+  line-height: 1;
+}
+
+/* ========================================
+   ページタイトル（人選択画面など）
+   ======================================== */
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  padding: 16px 16px 12px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ========================================
+   テキスト入力（メッセージなど）
+   ======================================== */
+.form-container {
+  margin-top: 16px;
+}
+
+.form-container label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.form-container .optional {
+  color: #aaa;
+  font-size: 12px;
+}
+
+.form-container textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.form-container textarea:focus {
+  border-color: #c9c9c9;
+}
+
+/* ========================================
+   請求履歴リスト
+   ======================================== */
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+}
+
+.history-item .h-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.history-item .h-date {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.history-item .h-amount {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.history-item .h-status {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+  text-align: right;
+}
+
+/* ========================================
+   【追加】ホーム画面 – プロフィール
+   ======================================== */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 24px 0 8px;
+}
+
+.profile img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.profile .name {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text);
+}
+
+.account {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 4px;
+}
+
+/* ========================================
+   【追加】ホーム画面 – 残高カード
+   ======================================== */
+.balance-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin: 16px 0;
+  text-align: right;
+}
+
+.balance-card .balance-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.balance-card .balance-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ========================================
+   【追加】ホーム画面 – 行ボタン
+   ======================================== */
+.menu-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 18px;
+  margin-top: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.menu-btn:hover {
+  background: #f9f9f9;
+}
+
+.menu-btn .menu-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.menu-btn .menu-arrow {
+  margin-left: auto;
+  color: #bbb;
+  font-size: 20px;
+}
+
+/* ========================================
+   レスポンシブ：幅520px以上で横レイアウト
+   ======================================== */
 @media (min-width: 520px){
   .row{
     flex-direction:row;
@@ -237,101 +450,4 @@ input[type="number"]:focus{
   input[type="number"]{
     width:220px;
   }
-}
-
-.form-container{
-  margin-top: 14px;
-}
-
-.form-container label{
-  display: block;
-  font-size: 13px;          /* .label と合わせる */
-  color: var(--muted);
-  letter-spacing: .02em;
-  margin-bottom: 6px;
-}
-
-.form-container .optional{
-  font-size: 12px;
-  color: var(--muted);
-  margin-left: 4px;
-}
-
-.form-container textarea{
-  width: 100%;
-  min-height: 140px;        /* 好きに変更OK */
-  padding: 12px 12px;
-  font-size: 16px;          /* iOSズーム回避 */
-  line-height: 1.5;
-  border: 1px solid var(--border);
-  border-radius: 12px;      /* input と揃える */
-  outline: none;
-  background: #fff;
-  resize: none;             /* 任意：伸縮させたければ both/vertical に */
-}
-
-.form-container textarea:focus{
-  border-color: #c9c9c9;    /* input:focus と揃える */
-}
-
-/* PC幅のときも見た目が崩れないように（必要なら） */
-@media (min-width: 520px){
-  .form-container textarea{
-    min-height: 160px;
-  }
-}
-
-.msg {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 12px 0;
-}
-
-.msg input[type="number"] {
-  width: 100%;
-  min-height: 48px;
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-sizing: border-box;
-}
-
-* 上側の入力エリア */
-.content{
-  flex: 1;                        /* 余白を持って下へ押し下げる */
-}
-
-/* 下側のボタンエリア */
-.actions{
-  margin-top: auto;               /* 下へ寄せる */
-  padding-top: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-/* 下に置いたボタンがキーボードと被りにくいように少し余白 */
-@supports (padding: max(0px)) {
-  .actions{
-    padding-bottom: max(16px, env(safe-area-inset-bottom));
-  }
-}
-
-/* 中央に置く箱 */
-.center-box {
-  width: 100%;
-  max-width: 420px;      /* iPhone 幅に近い */
-  display: flex;
-  flex-direction: column;
-  gap: 20px;             /* 各要素の間隔 */
-}
-
-/* 入力欄を100%幅に */
-.msg input[type="number"],
-.form-container textarea,
-.primary {
-  width: 100%;
-  box-sizing: border-box;
 }

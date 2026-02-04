@@ -47,9 +47,7 @@
   </div>
 
   <!-- 送金ボタン -->
-  <a href="4.html" class="disabled">
-    <button class="primary" id="sendBtn">送金する</button>
-  </a>
+  <button class="primary" id="sendBtn">送金する</button>
 
   <!-- エラーメッセージ表示 -->
   <div id="msg" style="color:red;margin-top:12px;"></div>
@@ -57,10 +55,13 @@
 </div>
 
 <script>
+  let currentBillId = null;
+
   (async () => {
     // URLパラメータからbill_idを取得
     const params = new URLSearchParams(window.location.search);
     const billId = params.get("bill_id");
+    currentBillId = billId;
 
     if (!billId) {
       document.getElementById("msg").textContent = "bill_idが指定されていません";
@@ -87,6 +88,58 @@
       console.error(e);
     }
   })();
+
+  // 送金ボタンのクリックイベント
+  document.getElementById("sendBtn").addEventListener("click", async () => {
+    // sessionStorageからログインユーザーのIDを取得
+    const userId = sessionStorage.getItem("user_id");
+
+    if (!userId) {
+      document.getElementById("msg").textContent = "ユーザーIDが取得できません。ログインしてください。";
+      return;
+    }
+
+    if (!currentBillId) {
+      document.getElementById("msg").textContent = "bill_idが取得できません";
+      return;
+    }
+
+    try {
+      // 送金中の表示
+      document.getElementById("sendBtn").disabled = true;
+      document.getElementById("sendBtn").textContent = "送金中...";
+
+      // update_bill APIを呼び出し
+      const res = await fetch("/api/update_bill", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          bill_id: currentBillId,
+          user_id: userId
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        document.getElementById("msg").textContent = data?.error ?? "更新に失敗しました";
+        document.getElementById("sendBtn").disabled = false;
+        document.getElementById("sendBtn").textContent = "送金する";
+        return;
+      }
+
+      // 成功したら4.htmlに遷移
+      location.href = "4.html";
+
+    } catch (e) {
+      document.getElementById("msg").textContent = "通信エラーです";
+      document.getElementById("sendBtn").disabled = false;
+      document.getElementById("sendBtn").textContent = "送金する";
+      console.error(e);
+    }
+  });
 </script>
 
 <script src="balance.js" defer></script>
