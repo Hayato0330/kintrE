@@ -41,69 +41,65 @@
   </div>
 
   <script>
-    // ▼ 設定: バックエンドのファイルパスに合わせてください
-    const API_URL = '/api/createbills'; 
+  // ▼ 設定: バックエンドのファイルパスに合わせてください
+  const API_URL = '/api/createbills'; 
 
-    // ▼ 設定: 自分の口座番号（ログイン機能ができるまでは仮の数字を入れる）
-    const myAccountNumber = 100001; 
+  // ▼ URLパラメータから口座番号を取得
+  const params = new URLSearchParams(window.location.search);
+  const myAccountNumber = params.get('number') || '100001';
 
-    const sendBtn = document.getElementById("sendBtn");
-    const msgDiv = document.getElementById("msg");
+  const sendBtn = document.getElementById("sendBtn");
+  const msgDiv = document.getElementById("msg");
 
-    sendBtn.addEventListener("click", async () => {
-      // 1. 入力値の取得
-      const amountVal = document.getElementById("amount").value;
-      const messageVal = document.getElementById("message").value;
+  sendBtn.addEventListener("click", async () => {
+    // 1. 入力値の取得
+    const amountVal = document.getElementById("amount").value;
+    const messageVal = document.getElementById("message").value;
 
-      // 2. バリデーション（チェック）
-      msgDiv.textContent = "";
-      if (!amountVal || amountVal <= 0) {
-        msgDiv.textContent = "正しい金額を入力してください";
-        return;
+    // 2. バリデーション（チェック）
+    msgDiv.textContent = "";
+    if (!amountVal || amountVal <= 0) {
+      msgDiv.textContent = "正しい金額を入力してください";
+      return;
+    }
+
+    // ボタンを無効化（連打防止）
+    sendBtn.disabled = true;
+    sendBtn.textContent = "作成中...";
+
+    try {
+      // 3. バックエンドへ送信
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          account_number: myAccountNumber, // URLから取得した口座番号を使用
+          amount: parseInt(amountVal),
+          message: messageVal
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        sessionStorage.setItem('created_payment_link', result.url);
+        location.href = "step7_2.html";
+      } else {
+        throw new Error(result.error || "作成に失敗しました");
       }
 
-      // ボタンを無効化（連打防止）
-      sendBtn.disabled = true;
-      sendBtn.textContent = "作成中...";
+    } catch (error) {
+      console.error(error);
+      msgDiv.textContent = error.message;
+      sendBtn.disabled = false;
+      sendBtn.textContent = "請求する";
+    }
+  });
 
-      try {
-        // 3. バックエンドへ送信
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            account_number: myAccountNumber, // 必須
-            amount: parseInt(amountVal),     // 必須
-            message: messageVal              // 任意
-          })
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-          // ★★★ ここが変更点 ★★★
-          // URLパラメータではなく「セッションストレージ」に保存します
-          // key: "created_payment_link", value: 作成されたURL
-          sessionStorage.setItem('created_payment_link', result.url);
-
-          // 保存したので、次の画面へ移動（URLは綺麗なまま）
-          location.href = "step7_2.html";
-        } else {
-          throw new Error(result.error || "作成に失敗しました");
-        }
-
-      } catch (error) {
-        console.error(error);
-        msgDiv.textContent = error.message;
-        sendBtn.disabled = false;
-        sendBtn.textContent = "請求する";
-      }
-    });
-
-    document.getElementById("goHomeBtn").addEventListener("click", () => {
-      location.href = "../index.html";
-    });
-  </script>
+  document.getElementById("goHomeBtn").addEventListener("click", () => {
+    location.href = "../index.html";
+  });
+</script>
 
 </body>
 </html>

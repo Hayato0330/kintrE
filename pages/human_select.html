@@ -170,8 +170,12 @@ function render(users){
 
     // ボタンクリック → 送金画面へ遷移
     btn.addEventListener("click", (e) => {
-      e.stopPropagation();  
-      location.href = `pages/sent tab.html?from=${encodeURIComponent(window.currentAccountNumber)}&to=${encodeURIComponent(u.number)}`;
+      e.stopPropagation(); 
+
+      const from = window.myAccountNumber; // ← これにする
+      const to = u.number;
+      
+      location.href = `./sent tab.html?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
     });
     // ▲▲ 追加ここまで ▲▲
     const chev = document.createElement("div");
