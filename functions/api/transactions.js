@@ -20,8 +20,8 @@ export async function onRequestPost(context) {
       // 相手に足す
       db.prepare("UPDATE Users SET balance = balance + ? WHERE number = ?").bind(body.amount, body.recipient_id),
       // 履歴に残す
-      db.prepare("INSERT INTO Transactions (sender_id, recipient_id, amount, message) VALUES (?, ?, ?, ?)")
-        .bind(body.sender_id, body.recipient_id, body.amount, body.message)
+      // db.prepare("INSERT INTO Transactions (sender_id, recipient_id, amount, message) VALUES (?, ?, ?, ?)")
+      //   .bind(body.sender_id, body.recipient_id, body.amount, body.message)
     ]);
 
     return Response.json({ success: true, message: "送金完了しました" });
