@@ -27,7 +27,7 @@ body {
    ======================================== */
 .phone {
   max-width: 480px;
-  margin: 0 auto;
+  margin:  auto;
   background: #fff;
   min-height: 100vh;
 }
