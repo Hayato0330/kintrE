@@ -2,30 +2,32 @@
 <html lang="ja"> 
   <head>
      <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>口座画面</title>
        <link rel="stylesheet" href="pages/style.css">
-       </head> 
+  </head> 
 
        
 
       <body> 
-        <div class="container">
-          <div class="screen"> 
-            <div class="profile">
-            <img id="user_icon" src="https://via.placeholder.com/60" alt="アイコン">
-             <p class="name" id="user-name">---</p>
-             </div>
+        <div class="phone">
+          <div class="screen">
+            <div class="center-box"> 
+              <div class="profile">
+                <img id="user_icon" src="https://via.placeholder.com/60" alt="アイコン">
+                <p class="name" id="user-name">---</p>
+              </div>
               <p class="account">
               口座番号：<span id="account-number">0000000</span>
               </p>
                
                
                <!-- 残高-->
-                 <div class="row">
-                   <div class="label" >残高</div> 
-                   <div class="value"><span id="limit">0</span> 円</div> 
-                  </div> 
-                  <hr style="border:none;border-top:1px solid #eee;margin:12px 0;"> 
+              <div class="row">
+                <div class="label" >残高</div> 
+                <div class="value"><span id="limit">0</span> 円</div> 
+                </div> 
+                <hr style="border:none;border-top:1px solid #eee;margin:12px 0;"> 
                   
                   
                   
@@ -113,6 +115,8 @@
       }
     })();
   </script>
+</div>
+</div>
 </div>
 </div>
 </body> 

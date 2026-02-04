@@ -27,7 +27,9 @@ body {
    ======================================== */
 .container {
   padding: 0 
-  clamp(16px, 4vw, 64px);}
+  clamp(16px, 4vw, 64px);
+  background: #fff;
+}
 .phone {
   max-width: 480px;
   margin:  auto;
