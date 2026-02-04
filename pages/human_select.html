@@ -3,40 +3,47 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-
   <title>送金相手を選択</title>
 
+  <!-- ★口座画面と同じCSSを使う（パスはあなたの構成に合わせて調整） -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- ※style.cssを使わない/読み込めない場合の最低限フォールバック（任意） -->
   <style>
-    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;background:#f5f5f7}
-    header{padding:16px 18px;font-weight:700;font-size:22px;background:#fff;border-bottom:1px solid #ddd}
+    /* style.cssが効いていれば基本不要。効かない時のための保険 */
+    body{margin:0;background:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI",sans-serif}
     .wrap{max-width:520px;margin:0 auto}
-    .hint{padding:10px 18px;color:#666;background:#fff;border-bottom:1px solid #eee;font-size:13px}
-    .list{background:#fff}
-    .row{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid #eee;cursor:pointer}
-    .row:hover{background:#fafafa}
-    .avatar{width:54px;height:54px;border-radius:50%;border:1px solid #ddd;object-fit:cover;background:#fff}
-    .name{font-size:20px;font-weight:600;flex:1}
-    .chev{color:#bbb;font-size:26px;line-height:1}
     .err{padding:14px 18px;color:#b00020;background:#fff;white-space:pre-wrap}
     .small{color:#777;font-size:12px;margin-top:4px}
+
+    /* style.cssに無い場合だけ効く */
+    .primary-compact{
+      width:auto;
+      min-height:40px;
+      margin-top:0;
+      padding:6px 12px;
+      font-size:14px;
+      border-radius:10px;
+    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <header>送金相手を選択</header>
-    <div id="list" class="list"></div>
+    <!-- style.cssの.page-titleを活用 -->
+    <div class="page-title">送金相手を選択</div>
+    <div id="list"></div>
   </div>
 
 <script>
 /* =========================================================
-   設定（あなたの構成に固定）
-   kintrE/pages/human_select.html から kintrE/user_db.csv
+  DB(API)のみ使用版
+  - 自分の口座番号：sessionStorage['target_account_number']
+  - 送金先一覧：GET /api/recipients?exclude_number=...
+  - 行全体クリックでも遷移
+  - 送金ボタンも遷移（stopPropagationで二重発火防止）
 ========================================================= */
-const CSV_PATH = "../user_db.csv";
 
-/* =========================================================
-   共通
-========================================================= */
 const listEl = document.getElementById("list");
 
 function escapeHtml(s){
@@ -46,167 +53,97 @@ function escapeHtml(s){
 }
 
 function showError(title, detail){
-  listEl.innerHTML =
-    `<div class="err"><b>${escapeHtml(title)}</b>\n\n${escapeHtml(detail)}</div>`;
+  listEl.innerHTML = `<div class="err"><b>${escapeHtml(title)}</b>\n\n${escapeHtml(detail)}</div>`;
 }
 
-function norm(s){
-  return String(s)
-    .replace(/^\uFEFF/, "")      // ★BOM除去
-    .replace(/\u3000/g, " ")     // 全角スペース→半角
-    .trim()
-    .toLowerCase();
+function normalizeIconPath(p){
+  if(!p) return "https://via.placeholder.com/60";
+  const s = String(p).trim();
+  if(/^https?:\/\//.test(s)) return s;
+  // pages/human_select.html から human/xxx.png を指す想定（CSVではなくても相対パスが返る場合に対応）
+  return "../" + s.replace(/^\.?\//, "");
 }
 
-/* =========================================================
-   区切り文字判定：タブ/カンマ/セミコロン/空白
-========================================================= */
-function detectDelimiter(headerLine){
-  const counts = {
-    "\t": (headerLine.match(/\t/g) || []).length,
-    ",":  (headerLine.match(/,/g)  || []).length,
-    ";":  (headerLine.match(/;/g)  || []).length
-  };
-  let best = "\t";
-  for(const k of Object.keys(counts)){
-    if(counts[k] > counts[best]) best = k;
-  }
-  return counts[best] === 0 ? "WS" : best; // 0なら空白区切り
+function getAccountNumber(u){
+  return (u.account_number ?? u.number ?? u.accountNumber ?? "").toString().trim();
 }
 
-function splitLine(line, delim){
-  line = String(line).replace(/^\uFEFF/, ""); // 念のためBOM除去
-  if(delim === "WS") return line.trim().split(/\s+/).map(s => s.trim());
-  return line.split(delim).map(s => s.trim());
+function getIcon(u){
+  return u.icon_url ?? u.aicon ?? u.icon ?? u.avatar ?? "";
 }
 
-function findKey(headers, candidates){
-  const H = headers.map(norm);
-  for(const c of candidates){
-    const idx = H.indexOf(norm(c));
-    if(idx !== -1) return headers[idx];
-  }
-  return null;
-}
-
-/* =========================================================
-   CSVパース（ヘッダー揺れ対応）
-========================================================= */
-function parseCSV(text){
-  const lines = String(text).replace(/\r/g, "").split("\n").filter(l => l.trim() !== "");
-  if(lines.length < 2) return { users: [], debug: { headerLine: "", delim: "", headers: [] } };
-
-  const headerLine = lines[0];
-  const delim = detectDelimiter(headerLine);
-  const headers = splitLine(headerLine, delim);
-
-  const keyNumber = findKey(headers, ["number", "id", "口座番号"]);
-  const keyName   = findKey(headers, ["name", "氏名", "名前"]);
-  const keyBal    = findKey(headers, ["balance", "残高"]);
-  const keyIcon   = findKey(headers, ["aicon", "icon", "avatar", "image", "img"]);
-
-  const debug = { headerLine, delim, headers, keys: { keyNumber, keyName, keyBal, keyIcon } };
-
-  if(!keyNumber || !keyName || !keyIcon){
-    return { users: null, debug };
-  }
-
-  const users = [];
-  for(let i=1;i<lines.length;i++){
-    const cols = splitLine(lines[i], delim);
-    const obj = {};
-    headers.forEach((h, idx) => obj[h] = cols[idx] ?? "");
-    users.push({
-      number: obj[keyNumber],
-      name: obj[keyName],
-      balance: keyBal ? obj[keyBal] : "",
-      icon: obj[keyIcon]
-    });
-  }
-  return { users, debug };
-}
-
-/* =========================================================
-   画像パス補正
-   - CSVのaiconが「human/human1.png」なら
-     pages/ からは「../human/human1.png」が正しい
-========================================================= */
-function normalizeIconPath(iconPath){
-  if(!iconPath) return "";
-  if(/^https?:\/\//.test(iconPath)) return iconPath;
-  return "../" + iconPath.replace(/^\.?\//, "");
-}
-
-/* =========================================================
-   描画
-========================================================= */
 function render(users){
   listEl.innerHTML = "";
 
   users.forEach(u => {
-    const row = document.createElement("div");
-    row.className = "row";
+    const toAcct = getAccountNumber(u);
+    const toName = (u.name ?? "---").toString();
 
+    // 行（人1人分）
+    const row = document.createElement("div");
+    row.className = "list-row";
+
+    // 行全体クリックでも遷移
+    row.addEventListener("click", () => {
+      if(!toAcct){
+        showError("エラー", "送金先の口座番号が取得できません。APIの返却キー(account_number / number)を確認してください。");
+        return;
+      }
+      sessionStorage.setItem("send_to_account", toAcct);
+      location.href = "./sent tab.html";
+    });
+
+    // アイコン
     const img = document.createElement("img");
     img.className = "avatar";
     img.alt = "avatar";
-    console.log(u.aicon);
-    img.src = normalizeIconPath(u.aicon);
+    img.src = normalizeIconPath(getIcon(u));
 
+    // 名前/口座番号
     const name = document.createElement("div");
     name.className = "name";
-    name.innerHTML = `${escapeHtml(u.name)}<div class="small">口座番号: ${escapeHtml(u.number || "-")}</div>`;
+    name.innerHTML = `${escapeHtml(toName)}<div class="small">口座番号: ${escapeHtml(toAcct || "-")}</div>`;
 
-    // ▼▼ ここが追加（送金ボタン） ▼▼
+    // 送金ボタン（口座画面と同じ.primaryで色変化）
     const btn = document.createElement("button");
+    btn.className = "primary primary-compact";
+    btn.type = "button";
     btn.textContent = "送金";
-    btn.style.padding = "8px 14px";
-    btn.style.fontSize = "14px";
-    btn.style.border = "none";
-    btn.style.borderRadius = "8px";
-    btn.style.background = "#007AFF";
-    btn.style.color = "#fff";
-    btn.style.cursor = "pointer";
 
-    // ボタンクリック → 送金画面へ遷移
+    // ボタンクリック時は行クリックを止める
     btn.addEventListener("click", (e) => {
-      e.stopPropagation(); 
-
-      const from = sessionStorage.getItem('target_account_number');
-      const to = u.number;
-      console.log(`送金元: ${from}, 送金先: ${to}`);
-      sessionStorage.setItem('send_to_account', to);
-      
-      location.href = `./sent tab.html`;
+      e.stopPropagation();
+      if(!toAcct){
+        showError("エラー", "送金先の口座番号が取得できません。APIの返却キー(account_number / number)を確認してください。");
+        return;
+      }
+      sessionStorage.setItem("send_to_account", toAcct);
+      location.href = "./sent tab.html";
     });
-    // ▲▲ 追加ここまで ▲▲
+
+    // > 表示
     const chev = document.createElement("div");
     chev.className = "chev";
     chev.textContent = "›";
 
-    // ★ 送金ボタンをユーザーごとに追加
     row.appendChild(img);
     row.appendChild(name);
-    row.appendChild(btn);   
+    row.appendChild(btn);
     row.appendChild(chev);
 
     listEl.appendChild(row);
   });
 }
 
-const myAcct = sessionStorage.getItem('target_account_number');
-if (!myAcct) {
-      showError("エラー", "口座番号が見つかりません。もう一度トップページから操作してください。");
-    }else {
-  main();
-}
-
 async function main(){
+  const myAcct = sessionStorage.getItem("target_account_number");
+  if(!myAcct){
+    showError("エラー", "口座番号が見つかりません。もう一度トップページから操作してください。");
+    return;
+  }
+
   try{
-    // ★ CSVではなくDB APIへ
-    const res = await fetch(`/api/recipients?exclude_number=${encodeURIComponent(myAcct)}`, {
-      cache: "no-store"
-    });
+    const res = await fetch(`/api/recipients?exclude_number=${encodeURIComponent(myAcct)}`, { cache: "no-store" });
     const data = await res.json();
 
     if(!res.ok){
@@ -226,77 +163,7 @@ async function main(){
   }
 }
 
-// /* =========================================================
-//    メイン：CSVを自動読み込み
-// ========================================================= */
-// async function main(){
-//   try{
-//     const res = await fetch(CSV_PATH, { cache: "no-store" });
-//     if(!res.ok) throw new Error(`HTTP ${res.status}`);
-
-//     const csvText = await res.text();
-
-//     // デバッグ：先頭行を可視化（BOM/文字化け確認）
-//     const firstLine = csvText.replace(/\r/g,"").split("\n").find(l => l.trim() !== "") || "";
-//     console.log("RAW HEADER:", firstLine);
-//     console.log("RAW HEADER (escaped):", JSON.stringify(firstLine));
-
-//     const { users, debug } = parseCSV(csvText);
-
-//     if(users === null){
-//       showError(
-//         "CSVヘッダーが認識できません",
-//         [
-//           `試したパス: ${CSV_PATH}`,
-//           "",
-//           "認識できたヘッダー（そのまま表示）:",
-//           debug.headers.join(" | "),
-//           "",
-//           "ヘッダー先頭行（escaped）:",
-//           JSON.stringify(debug.headerLine),
-//           "",
-//           "区切り推定:",
-//           String(debug.delim),
-//           "",
-//           "検出キー:",
-//           JSON.stringify(debug.keys, null, 2),
-//           "",
-//           "対処:",
-//           "・CSVを UTF-8（BOMなし）で保存",
-//           "・ヘッダーを number,name,balance,aicon に合わせる（aicon でも icon でも可）",
-//           "・区切りはタブ or カンマ推奨"
-//         ].join("\n")
-//       );
-//       return;
-//     }
-
-//     if(users.length === 0){
-//       showError("CSVは読めましたがデータ行がありません", "CSVの2行目以降にデータがあるか確認してください");
-//       return;
-//     }
-
-//     render(users);
-
-//   }catch(e){
-//     showError(
-//       "CSVが読み込めません",
-//       [
-//         `試したパス: ${CSV_PATH}`,
-//         "",
-//         "確認:",
-//         "・GitHub Pages（https://<user>.github.io/...）で開いている",
-//         "・kintrE/user_db.csv が存在",
-//         "",
-//         "詳細:",
-//         e.message
-//       ].join("\n")
-//     );
-//     console.error(e);
-//   }
-// }
-
-// main();
-// </script>
-
+main();
+</script>
 </body>
 </html>
