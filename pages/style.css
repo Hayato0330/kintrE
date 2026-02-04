@@ -480,17 +480,29 @@ input[type="number"]:focus{
   flex: 0 0 auto; /* 中央から動かない */
 }
 
-/* 非表示ボタン（小型） */
+/* 小型バージョンのプライマリ（primary と同じ動き） */
 .hide-btn {
-  padding: 6px 12px;
+  width: auto;
+  min-height: 40px;
+  padding: 6px 14px;
   font-size: 14px;
-  border: 1px solid #ccc;
-  background: #fff;
+  border: 0;
   border-radius: 10px;
   cursor: pointer;
+  background-color: aliceblue;   /* primary と同じ */
   white-space: nowrap;
+  font-weight: 600;
 }
 
+/* hover 時：赤に変化（primary と同じ） */
 .hide-btn:hover {
-  background: #f2f2f2;
+  background-color: rgb(237, 4, 51);
+  color: white;
 }
+
+/* クリック時（押し込み） */
+.hide-btn:active {
+  background-color: rgb(200, 2, 40);
+  color: white;
+}
+
