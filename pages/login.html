@@ -4,44 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ログイン</title>
-  <link rel="stylesheet" href="../css/index.css">
+
+  <!-- 請求内容の確認ページと同じCSSを使う -->
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   <div class="phone">
-    <div class="screen" style="display:flex;flex-direction:column;min-height:100vh;">
+    <div class="screen">
 
-      <!-- 上側 -->
-      <div style="flex:1;">
-        <h2 style="margin:0 0 20px;">ログイン</h2>
+      <!-- 見た目の雰囲気を合わせる（to-headerを流用） -->
+      <header class="to-header">
+        <div class="to-name">ログイン</div>
+        <div class="to-id">口座番号を入力してください</div>
+      </header>
 
-        <div class="row">
-          <div class="label">口座番号</div>
-          <input id="number" type="text" inputmode="numeric" placeholder="例: 100001" style="flex:1;">
-        </div>
+      <hr style="border:none;border-top:1px solid #eee;margin:12px 0;">
+
+      <!-- 口座番号 -->
+      <div class="row" style="margin-top:8px;">
+        <div class="label">口座番号</div>
+        <!-- style.css が input[type="number"] に当たるので number に合わせる -->
+        <input id="number" type="number" inputmode="numeric" placeholder="例: 100001">
       </div>
 
-      <!-- 下側（ボタンエリア） -->
-      <div style="padding:20px 0 40px; display:flex; justify-content:center;">
-        <button class="primary" id="loginBtn"
-          style="
-            width:80%;
-            max-width:300px;
-            font-size:20px;
-            font-weight:700;
-            padding:14px 0;
-            border-radius:14px;
-            border:0;
-            background:#007bff;
-            color:white;
-            transition:0.15s;
-          "
-        >
-          ログイン
-        </button>
-      </div>
+      <!-- ログインボタン：配置とサイズはstyle.cssの.primaryに任せる -->
+      <button class="primary" id="loginBtn">ログイン</button>
 
-      <div id="msg" style="margin-top:10px;color:#c00;"></div>
+      <!-- メッセージ -->
+      <div id="msg" style="color:red;margin-top:12px;"></div>
+
     </div>
   </div>
 
@@ -51,9 +43,16 @@
       const msgEl  = document.getElementById("msg");
       msgEl.textContent = "";
 
+      if (!number) {
+        msgEl.textContent = "口座番号を入力してください";
+        return;
+      }
+
       try {
+        // /api/login?number=... を呼ぶ（あなたの仕様に合わせる）
         const apiUrl = new URL("/api/login", window.location.origin);
         apiUrl.searchParams.set("number", number);
+
         const res = await fetch(apiUrl.toString(), { method: "GET" });
         const data = await res.json();
 
@@ -61,10 +60,16 @@
           msgEl.textContent = data?.error ?? `ログイン失敗 (status ${res.status})`;
           return;
         }
-        location.href = `8.html?number=${encodeURIComponent(data.number)}`;
+
+        // ログイン情報を保存（あなたの他ページが sessionStorage.user_id を使っているので合わせる）
+        sessionStorage.setItem("user_id", String(data.number ?? number));
+
+        // 次ページへ
+        location.href = `8.html?number=${encodeURIComponent(data.number ?? number)}`;
 
       } catch (e) {
-        msgEl.textContent = `通信エラー: ${e?.message ?? e}`;
+        msgEl.textContent = "通信エラーです";
+        console.error(e);
       }
     });
   </script>
