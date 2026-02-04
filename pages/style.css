@@ -78,13 +78,13 @@ button {
 }
 
 .label{
-  font-size:13px;
+  font-size:20px;
   color:var(--muted);
   letter-spacing:.02em;
 }
 
 .value{
-  font-size:20px;
+  font-size:40px;
   font-weight:700;
 }
 
@@ -372,7 +372,7 @@ input[type="number"]:focus{
 }
 
 .account {
-  font-size: 13px;
+  font-size: 20px;
   color: var(--muted);
   margin: 0 0 4px;
 }
