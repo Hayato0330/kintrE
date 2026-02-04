@@ -46,28 +46,42 @@
         請求履歴
         <span class="menu-arrow">›</span>
       </button>
+</div>
+<script>
+  document.getElementById("sendBtn").addEventListener("click", () => {
+    const acct = window.currentAccountNumber ??
+      document.getElementById("account-number")?.textContent?.trim();
 
-      <script>
-                    document.getElementById("sendBtn").addEventListener("click", () => {
-                      const acct =window.currentAccountNumber ??
-                        document.getElementById("account-number")?.textContent?.trim();
+    if (!acct) {
+      document.getElementById("msg").textContent = "口座番号が取得できません";
+      return;
+    }
+    location.href = `pages/human_select.html?number=${encodeURIComponent(acct)}`;
+  });
 
-                        if (!acct) {
-                          document.getElementById("msg").textContent = "口座番号が取得できません";
-                          return;
-                        }
-                      location.href = `pages/human_select.html?number=${encodeURIComponent(acct)}`;
-                    });
+  document.getElementById("requestBtn").addEventListener("click", () => {
+    // acct変数をここでも定義する
+    const acct = window.currentAccountNumber ??
+      document.getElementById("account-number")?.textContent?.trim();
+    
+    if (!acct) {
+      return;
+    }
+    location.href = `pages/7-1.html?number=${encodeURIComponent(acct)}`;
+  });
 
-    document.getElementById("requestBtn").addEventListener("click", () => {
-      location.href = `pages/7-1.html?number=${encodeURIComponent(acct)}`;
-                    });
+  document.getElementById("historyBtn").addEventListener("click", () => {
+    // acct変数をここでも定義する & IDをhistoryBtnに修正
+    const acct = window.currentAccountNumber ??
+      document.getElementById("account-number")?.textContent?.trim();
+    
+    if (!acct) {
+      return;
+    }
+    location.href = `pages/9.html?number=${encodeURIComponent(acct)}`;
+  });
+</script>
 
-    document.getElementById("requestBtn").addEventListener("click", () => {
-      location.href = `pages/7-1.html?number=${encodeURIComponent(acct)}`;
-                    });
-  </script>
-        </div>
   <script>
     (async () => {
       const accountNumber = "100001"; // ここを固定で10001にする
