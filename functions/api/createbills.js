@@ -20,7 +20,7 @@ export async function onRequestPost(context) {
 
     // 3. データベースに保存する (INSERT)
     await db.prepare(
-      "INSERT INTO bills (id, account_number, amount, message, status, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+      "INSERT INTO bill (id, account_number, amount, message, status, created_at) VALUES (?, ?, ?, ?, ?, ?)"
     )
     .bind(billId, body.account_number, body.amount, body.message || "", status, createdAt)
     .run();
