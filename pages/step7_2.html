@@ -9,59 +9,87 @@
 </head>
 
 <body>
-  <div class="phone"> 
-          <div class="screen">
 
-  <!-- ★ 全体センター寄せ: HTMLだけで対応 -->
-  <div style="max-width:520px;margin:0 auto;text-align:center;">
+  <div class="phone">
+    <div class="screen">
 
-    <div class="to-header" style="text-align:center;">
-      <div class="to-name">作成完了です</div>
-      <div class="to-id">請求リンクをコピーして相手に送ってください</div>
-    </div>
+      <!-- ★ 画面中央寄せ（CSS不要） -->
+      <div style="
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        text-align:center;
+        padding:20px;
+        width:100%;
+        box-sizing:border-box;
+      ">
 
-    <div class="row" style="flex-direction:column;align-items:center;">
-      <div class="value" id="linkBox"
-           style="font-size:14px;font-weight:600;word-break:break-all;margin-top:10px;">
-        (請求リンクをここに表示する)
+        <!-- タイトル -->
+        <div class="to-name" style="font-size:22px;font-weight:800;margin-bottom:10px;">
+          作成完了です
+        </div>
+
+        <!-- サブテキスト -->
+        <div class="to-id" style="font-size:14px;color:#555;margin-bottom:30px;">
+          請求リンクをコピーして相手に送ってください
+        </div>
+
+        <!-- ★ 通知メッセージ用スペース（高さ固定 → ズレない） -->
+        <div id="msg" style="
+          margin-bottom:20px;
+          min-height:22px;
+          line-height:22px;
+          font-size:14px;
+        "></div>
+
+        <!-- リンクコピー -->
+        <button class="primary" type="button" onclick="copyLink()"
+          style="width:100%; box-sizing:border-box; margin-bottom:12px;">
+          リンクをコピー
+        </button>
+
+        <!-- トップへ戻る -->
+        <button class="primary" id="sendBtn"
+          style="width:100%; box-sizing:border-box;">
+          トップ画面に戻る
+        </button>
+
       </div>
+
     </div>
-
-    <!-- ★ ボタンは .primary のまま！デザイン完全維持！ -->
-    <button class="primary" type="button" onclick="copyLink()" style="margin-top:20px;">
-      リンクをコピー
-    </button>
-
-    <button class="primary" id="sendBtn">トップ画面に戻る</button>
-    <script>
-      const btn = document.getElementById("sendBtn");
-      btn.addEventListener("click", () => {
-        location.href = "../index.html";
-      });
-    </script>
-
-    <div id="msg" style="margin-top:12px;"></div>
-
   </div>
 
   <script>
+    /* 表示はしないがコピーする対象 */
     const requestLink = "https://example.com/pay?id=12345";
-    document.getElementById("linkBox").innerText = requestLink;
+    let msgTimer = null;
 
-    function copyLink(){
+    function copyLink() {
       navigator.clipboard.writeText(requestLink)
         .then(() => showMsg("コピーしました！", "ok"))
         .catch(() => showMsg("コピーに失敗しました", "err"));
     }
 
-    function showMsg(text, type){
+    function showMsg(text, type) {
       const el = document.getElementById("msg");
-      el.className = type; // #msg.ok / #msg.err を使用
+      el.className = type;
       el.textContent = text;
+
+      if (msgTimer) clearTimeout(msgTimer);
+
+      msgTimer = setTimeout(() => {
+        el.textContent = "";      // 消えるが高さは固定なのでズレない
+        el.className = "";
+      }, 2000); // 2秒で消える
     }
+
+    /* トップに戻る */
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      location.href = "../index.html";
+    });
   </script>
 
-</div>
-  </div> 
 </body>
 </html>
