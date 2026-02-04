@@ -75,13 +75,16 @@
         minute: "2-digit"
       });
     }
-
+    
 
     function render(rows) {
       listEl.innerHTML = "";
 
       rows.forEach((row) => {
-       item.innerHTML =
+        const status = toStatus(row.status);
+        const item = document.createElement("div");
+        item.className = "list-item";
+        item.innerHTML =
           "<div class=\"line1\">" +
             "<div><b>ID:</b> " + escapeHtml(row.url || "-") + "</div>" +
             "<div class=\"status " + status.cls + "\">" + escapeHtml(status.label) + "</div>" +
@@ -93,6 +96,7 @@
             "<span style='font-size:0.9em; color:#888;'>日時: " + escapeHtml(formatDate(row.created_at)) + "</span>" +
           "</div>" +
           (row.message ? "<div class=\"line2\">メッセージ: " + escapeHtml(row.message) + "</div>" : "");
+          
         listEl.appendChild(item);
       });
     }
