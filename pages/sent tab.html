@@ -32,7 +32,7 @@
     <div>
       <div class="label">送金金額</div>
       <div class="muted">0〜上限の範囲で入力</div>
-    </div>
+    </div
     <input id="amount" type="number" inputmode="numeric" min="1" step="1" placeholder="例: 1000" />
   </div>
 
@@ -44,9 +44,9 @@
     const API_GET_USER = '/api/accounts';
     const API_SEND_MONEY = '/api/transactions';
 
-    const params = new URLSearchParams(location.search);
-    const senderId = params.get("from");
-    const recipientId = params.get("to");
+    
+    const senderId = sessionStorage.getItem('target_account_number');
+    const recipientId = sessionStorage.getItem('send_to_account');
 
     let senderData = null;
     let recipientData = null;

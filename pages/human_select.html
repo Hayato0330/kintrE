@@ -172,10 +172,11 @@ function render(users){
     btn.addEventListener("click", (e) => {
       e.stopPropagation(); 
 
-      const from = window.myAccountNumber; // ← これにする
+      const from = sessionStorage.getItem('target_account_number');; // ← これにする
       const to = u.number;
       
-      location.href = `./sent tab.html?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+      sessionStorage.setItem('send_to_account', to);
+      location.href = "pages/send.html";
     });
     // ▲▲ 追加ここまで ▲▲
     const chev = document.createElement("div");
