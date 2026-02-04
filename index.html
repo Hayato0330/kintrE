@@ -47,7 +47,7 @@
 
   <script>
     // 0 → 残高 へカウントアップ表示（高速）
-    function animateCount(el, to, durationMs = 500) {
+    function animateCount(el, to, durationMs = 300) {
       const start = 0;
       const end = Math.max(0, Math.floor(Number(to) || 0));
       const startTime = performance.now();
