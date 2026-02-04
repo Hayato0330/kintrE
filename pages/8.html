@@ -81,7 +81,7 @@
       }
 
       // 表示を更新
-      document.getElementById("sender-name").textContent = data.user_id ?? "---";
+      document.getElementById("sender-name").textContent = data.sender_name ?? "---";
       document.getElementById("requestAmount").textContent = Number(data.amount ?? 0).toLocaleString("ja-JP");
       document.getElementById("message").textContent = data.message ?? "メッセージなし";
 
@@ -112,7 +112,7 @@
       document.getElementById("sendBtn").textContent = "送金中...";
 
       // update_bill APIを呼び出し
-      const res = await fetch("/api/update_bill", {
+      const res = await fetch("/api/updatebills", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
@@ -144,7 +144,7 @@
   });
 </script>
 
-
+<script src="balance.js" defer></script>
 
 <script>
   const sendBtn = document.getElementById("sendBtn");
