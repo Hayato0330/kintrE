@@ -10,24 +10,19 @@
 <body>
   <div class="phone">
     <div class="screen">
-
-      <!-- ★中央寄せに変更 -->
-      <h2 style="margin:0 0 20px; text-align:center;">ログイン</h2>
-
-      <!-- 入力欄：幅を広くしたいので style="width:100%" を追加 -->
-      <div class="row">
-        <input id="number" 
-               type="text" 
-               inputmode="numeric" 
-               placeholder="口座番号 例: 100001"
-               style="width:100%; padding:12px; font-size:16px;">
+      <div class="content">
+        <!-- ログインタイトルや入力欄など “上側” をここに入れる -->
+        <h1>ログイン</h1>
+    
+        <div class="msg">
+          <input type="number" placeholder="口座番号 例: 100001">
+        </div>
       </div>
-
-      <!-- ボタンはそのままでOK -->
-      <button class="primary" id="loginBtn" style="width:100%; margin-top:20px;">ログイン</button>
-
-      <div id="msg" style="margin-top:10px;color:#c00;text-align:center;"></div>
-
+    
+      <div class="actions">
+        <!-- “下側” に置きたいボタンをここに入れる -->
+        <button class="primary">ログイン</button>
+      </div>
     </div>
   </div>
 
