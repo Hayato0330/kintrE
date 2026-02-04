@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  
+
   <title>送金相手を選択</title>
 
   <style>
@@ -150,6 +150,7 @@ function render(users){
     const img = document.createElement("img");
     img.className = "avatar";
     img.alt = "avatar";
+    console.log(u.icon);
     img.src = normalizeIconPath(u.icon);
 
     const name = document.createElement("div");
