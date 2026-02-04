@@ -62,8 +62,8 @@
 
       try {
         const [senderRes, recipientRes] = await Promise.all([
-            fetch(`${API_GET_USER}?id=${encodeURIComponent(senderId)}`),
-            fetch(`${API_GET_USER}?id=${encodeURIComponent(recipientId)}`)
+            fetch(`${API_GET_USER}?number=${encodeURIComponent(senderId)}`),
+            fetch(`${API_GET_USER}?number=${encodeURIComponent(recipientId)}`)
         ]);
 
         if (!senderRes.ok || !recipientRes.ok) throw new Error("ユーザー情報の取得に失敗しました");
