@@ -494,12 +494,6 @@ input[type="number"]:focus{
   white-space:nowrap;
 }
 
-/* PCのマウスホバー */
-.hide-btn:hover{
-  background-color: rgb(237, 4, 51);
-  color: white;
-}
-
 /* スマホのタップ中（ここが一番重要） */
 .hide-btn:active{
   background-color: rgb(200, 2, 40);
@@ -566,3 +560,20 @@ input[type="number"]:focus{
   background-color: rgb(200, 2, 40);
   color: #fff;
 }
+
+/* スマホ（hoverが貼り付く端末）では hover を無効化して薄青に戻す */
+@media (hover: none) {
+  .hide-btn:hover{
+    background-color: rgb(214, 238, 255) !important;
+    color: #111 !important;
+  }
+}
+
+/* PC（マウスがある端末）だけ hover で赤 */
+@media (hover: hover) and (pointer: fine){
+  .hide-btn:hover{
+    background-color: rgb(237, 4, 51);
+    color: white;
+  }
+}
+
