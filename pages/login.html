@@ -1,60 +1,69 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ログイン</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../css/index.css">
 </head>
 
 <body>
-
   <div class="phone">
     <div class="screen">
+      <h2 style="margin:0 0 12px;">ログイン</h2>
 
-      <div class="center-box">
-
-        <h2>ログイン</h2>
-
-        <!-- 口座番号 -->
-        <div class="form-container">
-          <label for="account-number">口座番号</label>
-          <input
-            type="number"
-            id="account-number"
-            placeholder="例：0000000"
-          >
-        </div>
-
-        <!-- ユーザー名 -->
-        <div class="form-container">
-          <label for="user-name">ユーザー名</label>
-          <input
-            type="text"
-            id="user-name"
-            placeholder="例：山田太郎"
-          >
-        </div>
-
-       
-
-        <!-- メッセージ表示 -->
-        <div id="msg" class="msg"></div>
-
-        <!-- ボタン -->
-        <div class="actions">
-            <a href="8.html">
-          <button class="primary" id="login-btn">
-            ログイン
-          </button>
-          </a>
-        </div>
-
+      <div class="row">
+        <div class="label">口座番号</div>
+        <input id="number" type="text" inputmode="numeric" placeholder="例: 100001" style="flex:1;">
       </div>
 
+      <div class="row">
+        <div class="label">名前</div>
+        <input id="name" type="text" placeholder="例: 前川隼人" style="flex:1;">
+      </div>
 
-      
+      <button class="primary" id="loginBtn">ログイン</button>
+      <div id="msg" style="margin-top:10px;color:#c00;"></div>
     </div>
   </div>
 
+  <script>
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const number = document.getElementById("number").value.trim();
+      const name   = document.getElementById("name").value.trim();
+      const msgEl  = document.getElementById("msg");
+      msgEl.textContent = "";
+  
+      if (!number || !name) {
+        msgEl.textContent = "口座番号と名前を入力してください";
+        return;
+      }
+  
+      try {
+        // ✅ URLを安全に生成（同一オリジンの /api/login を指す）
+        const apiUrl = new URL("/api/login", window.location.origin);
+        apiUrl.searchParams.set("number", number);
+        apiUrl.searchParams.set("name", name);
+  
+        // デバッグ用（必要なら表示）
+        // msgEl.textContent = `アクセス先: ${apiUrl.toString()}`;
+  
+        const res = await fetch(apiUrl.toString(), { method: "GET" });
+        const data = await res.json();
+  
+        if (!res.ok || !data.ok) {
+          msgEl.textContent = data?.error ?? `ログイン失敗 (status ${res.status})`;
+          return;
+        }
+  
+        // ✅ 認証OK → 8.htmlへ（login.htmlが /pages 配下なら ../8.html が安全）
+        location.href = `../8.html?number=${encodeURIComponent(data.number)}`;
+  
+      } catch (e) {
+        msgEl.textContent = `通信エラー: ${e?.message ?? e}`;
+      }
+    });
+  </script>
+  
 </body>
 </html>
