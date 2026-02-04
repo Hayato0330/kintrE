@@ -116,8 +116,9 @@
         sessionStorage.setItem("user_id", String(data.number ?? number));
 
         // ログイン後遷移
-        location.href = `8.html?number=${encodeURIComponent(data.number ?? number)}`;
-
+        //location.href = `8.html?number=${encodeURIComponent(data.number ?? number)}`;
+          location.href = `8.html?bill_id=${billId}`;
+          
       } catch (e) {
         showMsg("通信エラーです");
         console.error(e);
@@ -127,8 +128,8 @@
     document.getElementById("backBtn").addEventListener("click", () => {
       location.href = "../index.html";
     });
+
     
-    location.href = `8.html?bill_id=${billId}`;
   </script>
 </body>
 </html>
