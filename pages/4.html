@@ -1,26 +1,85 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>処理完了</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="phone"> 
-      <div class="screen">
-            <div class="shorikanryo-image">
-              <img src="../images/approval.png" alt="承認画像">
-            </div>
-      <hd>処理完了</hd>
-    <button class="primary" id="sendBtn">トップページに戻る</button>
+  <meta charset="UTF-8">
+  <title>送金完了</title>
+  <link rel="stylesheet" href="style.css">
 
-    <script>
-  const btn = document.getElementById("sendBtn");
-  btn.addEventListener("click", () => {
-    location.href = "../index.html";
-  });
-</script>
+  <style>
+    /* チェックマークアニメーション（大きめ） */
+    .check-container {
+      width: 180px;          /* ← サイズ大きく */
+      height: 180px;         /* ← サイズ大きく */
+      border-radius: 50%;
+      background: #4CAF50;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .checkmark {
+      width: 90px;           /* ← 大きく */
+      height: 90px;          /* ← 大きく */
+      stroke-width: 7;       /* ← 少し太めに */
+      stroke: white;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 72;  /* ← 大きさに合わせて変更 */
+      stroke-dashoffset: 72;
+      animation: draw 0.9s ease forwards;
+    }
+
+    @keyframes draw {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="phone">
+    <div class="screen">
+
+      <!-- 中央寄せ -->
+      <div style="
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        text-align:center;
+        padding:20px;
+      ">
+
+        <!-- ✔ アニメーションチェックマーク（大きい） -->
+        <div class="check-container">
+          <svg width="120" height="120" viewBox="0 0 52 52">
+            <path class="checkmark" d="M14 27 L22 35 L38 17" />
+          </svg>
+        </div>
+
+        <!-- タイトル -->
+        <h2 style="font-size:24px;font-weight:800;margin:0 0 32px;">
+          送金完了
+        </h2>
+
+        <!-- ボタン -->
+        <button class="primary" id="sendBtn" style="width:100%;max-width:380px;">
+          トップページに戻る
+        </button>
+
+      </div>
+
+    </div>
   </div>
-  </div>
+
+  <script>
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      location.href = "../index.html";
+    });
+  </script>
 </body>
 </html>
