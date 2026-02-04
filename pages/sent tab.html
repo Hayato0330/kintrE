@@ -1,15 +1,5 @@
 <!DOCTYPE html>
 <html lang="ja">
-
-<head>
-  <meta charset="UTF-8">
-  <title> tab menu</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="main.js" defer></script>
-  </head>
-
-  <body><!DOCTYPE html>
-<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -50,7 +40,7 @@
    
   <div id="msg" class="error-msg"></div>
 
-  <!-- <script>
+  <script>
     const API_GET_USER = '/api/accounts';
     const API_SEND_MONEY = '/api/transactions';
 
@@ -147,58 +137,19 @@
         btn.textContent = "送金する";
       }
     });
-  </script> -->
-</body>
-</html>
-   
-    <header class="to-header">
-      <div class="to-name">送金先</div>
-      <div class="to-id" id="to-name">三菱銀君</div>
-      <div class="to-id"> 個人番号
-      <span id = "to-id">12345</span>
-      </div>
-    >
-       <!-- 上限金額-->
-    <div class="row">
-      <div class="label" >上限金額</div>
-      <div class="value"><span id="limit">0</span> 円</div>
-    </div>
-
-    <hr style="border:none;border-top:1px solid #eee;margin:12px 0;">
-
-    <!-- 送金「」円 -->
-    <div class="row" style="align-items:flex-end;">
-      <div>
-        <div class="label">送金「 」円</div>
-        <div class="muted">0〜上限の範囲で入力</div>
-      </div>
-      <input id="amount" type="number" inputmode="numeric" min="0" step="1" placeholder="例: 500" />
-    </div>
-
-    <button type="button" class="primary" id="sendBtn">送金する</button>
-
-    <script>
-  btn.addEventListener("click", () => {
-    location.href = "4.html";
-  });
-</script>
-<script>
+  </script>
+  <script>
   console.log("href:", location.href);
   console.log("search:", location.search);
 
-  const params = new URLSearchParams(location.search);
-  const from = params.get("from");
-  const to = params.get("to");
+  const params1 = new URLSearchParams(location.search);
+  const from = params1.get("from");
+  const to = params1.get("to");
 
   alert(`受け取った値\nfrom=${from}\nto=${to}`);
 
   // 以降は from / to を使って処理
   // 例：document.getElementById("from").textContent = from ?? "---";
-</script>
-   
-   
-
-    <div id="msg" class=""></div>
-  </div>
-   
-  </body>
+  </script>
+</body>
+</html>

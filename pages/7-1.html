@@ -7,13 +7,8 @@
   <title>請求リンクを作成</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* エラーメッセージ用のスタイルを追加 */
-    .error {
-      color: #e74c3c;
-      font-size: 0.9rem;
-      margin-top: 10px;
-      text-align: center;
-    }
+    /* エラー表示用のスタイル */
+    .error { color: #e74c3c; font-size: 0.9em; margin-top: 10px; text-align: center;}
   </style>
 </head>
 
@@ -46,31 +41,22 @@
   </div>
 
   <script>
-    // ▼ 設定エリア 
-    // 1. あなたのAPIのURL（ファイル名に合わせてください）
+    // ▼ 設定: バックエンドのファイルパスに合わせてください
     const API_URL = '/api/create_bills'; 
 
-    // 2. 請求者（自分）の口座番号
-    // ※本来はログイン情報から取得しますが、今はDBに実在する番号(例: 1)を指定してください
-    const myAccountNumber = 1; 
-    // ▲ 設定エリア終了
-
+    // ▼ 設定: 自分の口座番号（ログイン機能ができるまでは仮の数字を入れる）
+    const myAccountNumber = 100001; 
 
     const sendBtn = document.getElementById("sendBtn");
     const msgDiv = document.getElementById("msg");
 
     sendBtn.addEventListener("click", async () => {
-      // 入力値を取得
-      const amountInput = document.getElementById("amount");
-      const messageInput = document.getElementById("message");
-      
-      const amountVal = parseInt(amountInput.value);
-      const messageVal = messageInput.value;
+      // 1. 入力値の取得
+      const amountVal = document.getElementById("amount").value;
+      const messageVal = document.getElementById("message").value;
 
-      // エラーメッセージをリセット
+      // 2. バリデーション（チェック）
       msgDiv.textContent = "";
-
-      // バリデーション（金額チェック）
       if (!amountVal || amountVal <= 0) {
         msgDiv.textContent = "正しい金額を入力してください";
         return;
@@ -81,15 +67,13 @@
       sendBtn.textContent = "作成中...";
 
       try {
-        // バックエンドへデータを送信
+        // 3. バックエンドへ送信
         const response = await fetch(API_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            account_number: myAccountNumber, // バックエンドの必須項目
-            amount: amountVal,               // バックエンドの必須項目
+            account_number: myAccountNumber, // 必須
+            amount: parseInt(amountVal),     // 必須
             message: messageVal              // 任意
           })
         });
@@ -97,21 +81,20 @@
         const result = await response.json();
 
         if (response.ok && result.success) {
-          
-          const encodedUrl = encodeURIComponent(result.url);
-          
-          location.href = `step7_2.html?share_url=${encodedUrl}`;
-          
+          // ★★★ ここが変更点 ★★★
+          // URLパラメータではなく「セッションストレージ」に保存します
+          // key: "created_payment_link", value: 作成されたURL
+          sessionStorage.setItem('created_payment_link', result.url);
+
+          // 保存したので、次の画面へ移動（URLは綺麗なまま）
+          location.href = "step7_2.html";
         } else {
-          // 失敗した場合
-          throw new Error(result.error || "エラーが発生しました");
+          throw new Error(result.error || "作成に失敗しました");
         }
 
       } catch (error) {
         console.error(error);
         msgDiv.textContent = error.message;
-        
-        // ボタンを元に戻す
         sendBtn.disabled = false;
         sendBtn.textContent = "請求する";
       }
