@@ -117,8 +117,12 @@
 
         // ログイン後遷移
         //location.href = `8.html?number=${encodeURIComponent(data.number ?? number)}`;
-          location.href = `8.html?bill_id=${billId}`;
-          
+    const params = new URLSearchParams(window.location.search);
+    const billId = params.get("bill_id");
+    currentBillId = billId;
+
+    location.href = `8.html?bill_id=${billId}`;
+
       } catch (e) {
         showMsg("通信エラーです");
         console.error(e);
