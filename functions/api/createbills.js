@@ -1,12 +1,9 @@
 export async function onRequestPost(context) {
-  const db = context.env.DB; // wrangler.jsoncで設定したbinding名
+  const db = context.env.DB; 
 
   try {
-    // 1. フロントエンドから送られてきたデータを受け取る
-    // { account_number: 12345, amount: 1000, message: "割り勘", date: "2026-02-03..." }
     const body = await context.request.json();
-
-    // バリデーション（必須項目のチェック）
+    
     if (!body.account_number || !body.amount) {
       return Response.json({ error: "口座番号と金額は必須です" }, { status: 400 });
     }
