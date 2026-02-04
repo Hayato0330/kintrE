@@ -40,7 +40,7 @@
    
   <div id="msg" class="error-msg"></div>
 
-  <script>
+  <!-- <script>
     const API_GET_USER = '/api/accounts';
     const API_SEND_MONEY = '/api/transactions';
 
@@ -137,19 +137,16 @@
         btn.textContent = "送金する";
       }
     });
-  </script>
+  </script> -->
   <script>
   console.log("href:", location.href);
   console.log("search:", location.search);
 
-  const params1 = new URLSearchParams(location.search);
-  const from = params1.get("from");
-  const to = params1.get("to");
+  const params = new URLSearchParams(location.search);
+  const from = params.get("from");
+  const to = params.get("to");
 
-  alert(`受け取った値\nfrom=${from}\nto=${to}`);
-
-  // 以降は from / to を使って処理
-  // 例：document.getElementById("from").textContent = from ?? "---";
-  </script>
+  alert(`受け取った値だ．\nfrom=${from}\nto=${to}`);
+</script>
 </body>
 </html>
