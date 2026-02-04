@@ -492,6 +492,7 @@ input[type="number"]:focus{
   cursor:pointer;
   background-color: rgb(214, 238, 255); /* 薄い青 */
   white-space:nowrap;
+  color: #0275d8;
 }
 
 /* スマホのタップ中（ここが一番重要） */
