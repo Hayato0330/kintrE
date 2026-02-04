@@ -21,17 +21,22 @@
           口座番号：<span id="account-number">0000000</span>
         </p>
 
+        <!-- 残高ラベル -->
         <div class="row">
           <div class="label">残高</div>
-          <div class="value">
+        </div>
+
+        <!-- 金額 + ボタン（2行目に横並び） -->
+        <div class="row balance-money-row">
+          <div class="value money-box">
             <span id="limit">0</span> 円
           </div>
-          <!-- 切替ボタン -->
-          <button id="toggle-visibility" class="primary" 
-            style="width:auto;min-height:40px;font-size:14px;padding:6px 12px;margin-top:10px;">
+
+          <button id="toggle-visibility" class="hide-btn">
             非表示
           </button>
         </div>
+
 
         <hr style="border:none;border-top:1px solid #eee;margin:12px 0;" />
 
@@ -77,7 +82,7 @@
 
       if (!isHidden) {
         // 非表示へ
-        limitEl.textContent = "＊＊＊";
+        limitEl.textContent = "---,---円";
         btn.textContent = "表示";
         isHidden = true;
       } else {

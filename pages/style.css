@@ -461,3 +461,36 @@ input[type="number"]:focus{
   align-items: center; /* 中央寄せ */
   text-align: center;  /* テキストも中央 */
 }
+
+/* 金額行：金額を中央に、ボタンは右側に配置 */
+.balance-money-row {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 金額を中央寄せ */
+  gap: 20px; /* 金額とボタンの間隔 */
+  margin-top: 8px;
+  width: 100%;
+}
+
+/* 金額の見た目 */
+.money-box {
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  flex: 0 0 auto; /* 中央から動かない */
+}
+
+/* 非表示ボタン（小型） */
+.hide-btn {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.hide-btn:hover {
+  background: #f2f2f2;
+}
