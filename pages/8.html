@@ -13,36 +13,72 @@
 
   <header class="to-header">
     <div class="to-name">請求元</div>
-    <div class="to-id" id="to-name">三菱銀君</div>
+    <div class="to-id" id="sender-name">読み込み中...</div>
   </header>
-
-  <!-- 上限金額 -->
-  <div class="row">
-    <div class="label">上限金額</div>
-    <div class="value"><span id="limit">5000</span> 円</div>
-  </div>
 
   <hr style="border:none;border-top:1px solid #eee;margin:12px 0;">
 
-  <!-- 請求金額（入力なし） -->
+  <!-- 請求金額 -->
   <div class="row" style="align-items:flex-end;">
     <div>
       <div class="label">請求金額</div>
       <div class="muted">相手からの請求額</div>
     </div>
     <div class="value">
-      <span id="requestAmount">3000</span> 円
+      <span id="requestAmount">0</span> 円
+    </div>
+  </div>
+
+  <!-- メッセージ -->
+  <div class="row" style="margin-top:12px;">
+    <div>
+      <div class="label">メッセージ</div>
+      <div id="message" style="color:#666;font-size:14px;">---</div>
     </div>
   </div>
 
   <!-- 送金ボタン -->
-   <a href="4.html" class="disabled">
-  <button class="primary" id="sendBtn">送金する</button>
+  <a href="4.html" class="disabled">
+    <button class="primary" id="sendBtn">送金する</button>
   </a>
 
-  <!-- メッセージ表示 -->
-  <div id="msg"></div>
+  <!-- エラーメッセージ表示 -->
+  <div id="msg" style="color:red;margin-top:12px;"></div>
 </div>
 </div>
+
+<script>
+  (async () => {
+    // URLパラメータからbill_idを取得
+    const params = new URLSearchParams(window.location.search);
+    const billId = params.get("bill_id");
+
+    if (!billId) {
+      document.getElementById("msg").textContent = "bill_idが指定されていません";
+      return;
+    }
+
+    try {
+      // APIを呼び出して請求情報を取得
+      const res = await fetch(`/api/bills?bill_id=${encodeURIComponent(billId)}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        document.getElementById("msg").textContent = data?.error ?? "読み込みに失敗しました";
+        return;
+      }
+
+      // 表示を更新
+      document.getElementById("sender-name").textContent = data.sender_name ?? "---";
+      document.getElementById("requestAmount").textContent = Number(data.amount ?? 0).toLocaleString("ja-JP");
+      document.getElementById("message").textContent = data.message ?? "メッセージなし";
+
+    } catch (e) {
+      document.getElementById("msg").textContent = "通信エラーです";
+      console.error(e);
+    }
+  })();
+</script>
+
 </body>
 </html>
