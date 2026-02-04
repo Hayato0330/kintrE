@@ -569,6 +569,7 @@ input[type="number"]:focus{
 @media (hover: hover) and (pointer: fine){
   .hide-btn:hover{
     background-color: rgb(237, 4, 51);
+    color: white;
   }
 }
 
