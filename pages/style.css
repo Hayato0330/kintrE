@@ -506,6 +506,15 @@ input[type="number"]:focus{
   color: white;
 }
 
+/* ★クリック後に赤が残らないように強制リセット */
+.hide-btn:focus,
+.hide-btn:focus-visible{
+  background-color: rgb(214, 238, 255) !important; /* 薄い青に戻す */
+  color:white !important;
+  outline:none !important;
+  box-shadow:none !important;
+}
+
 /* クリック後に枠線が出たり変色したりするのを抑える（任意） */
 .hide-btn:focus{
   outline: none;
