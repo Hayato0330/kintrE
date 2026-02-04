@@ -15,7 +15,7 @@
 
       <!-- ★ 中央寄せ（作成完了ページと同じ） -->
       <div style="
-        min-height:100vh;
+        min-height:80vh;
         display:flex;
         flex-direction:column;
         justify-content:center;
@@ -27,25 +27,23 @@
       ">
 
         <!-- タイトル -->
-        <div class="to-name" style="font-size:22px;font-weight:800;margin-bottom:10px; width:100%;">
+        <div class="to-name" style="font-size:30px;font-weight:800;margin-bottom:10px; width:100%;">
           ログイン
         </div>
 
         <!-- サブテキスト -->
-        <div class="to-id" style="font-size:14px;color:#555;margin-bottom:22px; width:100%;">
+        <div class="to-id" style="font-size:20px;color:#555;margin-bottom:22px; width:100%;">
           口座番号を入力してください
         </div>
 
         <!-- 入力欄（横長100%） -->
         <div style="width:100%; margin-bottom:14px;">
-          <div class="label" style="margin-bottom:6px;">口座番号</div>
-
           <!-- style.css が input[type="number"] を装飾しているので number に合わせる -->
           <input
             id="number"
             type="number"
             inputmode="numeric"
-            placeholder="例: 100001"
+            placeholder="例: 000000"
             style="width:100%; box-sizing:border-box;"
           />
         </div>
