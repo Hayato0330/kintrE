@@ -143,6 +143,41 @@
     }
   });
 </script>
+<script>
+  (async () => {
+    // URLパラメータからnumberを取得
+    const params = new URLSearchParams(window.location.search);
+    const number = params.get("number");
+  
+
+    if (!number) {
+      document.getElementById("msg").textContent = "nemberが指定されていません";
+      return;
+    }
+
+    try {
+      // APIを呼び出して請求情報を取得
+      const res = await fetch(`/api/balance?number=${encodeURIComponent(number)}`);
+      console.log(res);
+      const data = await res.json();
+      console.log(data);
+
+      if (!res.ok) {
+        document.getElementById("msg").textContent = data?.error ?? "読み込みに失敗しました";
+        return;
+      }
+
+      // 表示を更新
+      document.getElementById("limit").textContent = data.balance ?? "---";
+
+
+    } catch (e) {
+      document.getElementById("msg").textContent = "通信エラーです";
+      console.error(e);
+    }
+  })();
+  </script>
+
 
 <script src="balance.js" defer></script>
 
