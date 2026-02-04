@@ -112,7 +112,7 @@
       document.getElementById("sendBtn").textContent = "送金中...";
 
       // update_bill APIを呼び出し
-      const res = await fetch("/api/update_bill", {
+      const res = await fetch("/api/updatebills", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
