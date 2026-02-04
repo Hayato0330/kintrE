@@ -171,7 +171,7 @@ function render(users){
     // ボタンクリック → 送金画面へ遷移
     btn.addEventListener("click", (e) => {
       e.stopPropagation();  
-      location.href = `pages/human_select.html?number=${encodeURIComponent(u.number)}`;
+      location.href = `human_select.html?number=${encodeURIComponent(u.number)}`;
     });
     // ▲▲ 追加ここまで ▲▲
     const chev = document.createElement("div");
