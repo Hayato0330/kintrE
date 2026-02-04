@@ -20,9 +20,16 @@ export async function onRequestPost(context) {
 
     // 3. データベースに保存する (INSERT)
     await db.prepare(
-      "INSERT INTO bill (id, account_number, amount, message, status, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+      "INSERT INTO bill (id, user_id, amount, message, status, created_at) VALUES (?, ?, ?, ?, ?, ?)"
     )
-    .bind(billId, body.account_number, body.amount, body.message || "", status, createdAt)
+    .bind(
+      billId, 
+      body.account_number, // フロントから来た口座番号を 'user_id' カラムに入れます
+      body.amount, 
+      body.message || "", 
+      status, 
+      createdAt
+    )
     .run();
     
     // 生成されたリンク (例: https://.../pay.html?bill_id=550e8400...)
