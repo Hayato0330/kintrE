@@ -10,27 +10,48 @@
 <body>
   <div class="phone">
     <div class="screen">
+      <h2 style="margin:0 0 12px;">ログイン</h2>
 
-      <!-- 上側（タイトル・入力欄） -->
-      <div class="content">
-        <h2 style="text-align:center; margin-bottom:24px;">ログイン</h2>
-    
-        <div class="row">
-          <input type="number" placeholder="口座番号 例: 100001">
-        </div>
+      <div class="row">
+        <div class="label">口座番号</div>
+        <input id="number" type="text" inputmode="numeric" placeholder="例: 100001" style="flex:1;">
       </div>
-    
-      <!-- 下側（ボタンを下固定） -->
-      <div class="actions">
-        <button class="primary">ログイン</button>
-      </div>
-    
+
+      <button class="primary" id="loginBtn">ログイン</button>
+      <div id="msg" style="margin-top:10px;color:#c00;"></div>
     </div>
-    
   </div>
 
   <script>
-    /* --- あなたのログイン処理 --- */
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const number = document.getElementById("number").value.trim();
+      const msgEl  = document.getElementById("msg");
+      msgEl.textContent = "";
+  
+      try {
+        // ✅ URLを安全に生成（同一オリジンの /api/login を指す）
+        const apiUrl = new URL("/api/login", window.location.origin);
+        apiUrl.searchParams.set("number", number);
+  
+        // デバッグ用（必要なら表示）
+        // msgEl.textContent = `アクセス先: ${apiUrl.toString()}`;
+  
+        const res = await fetch(apiUrl.toString(), { method: "GET" });
+        const data = await res.json();
+  
+        if (!res.ok || !data.ok) {
+          msgEl.textContent = data?.error ?? `ログイン失敗 (status ${res.status})`;
+          return;
+        }
+  
+        // ✅ 認証OK → 8.htmlへ（login.htmlが /pages 配下なら ../8.html が安全）
+        location.href = `8.html?number=${encodeURIComponent(data.number)}`;
+  
+      } catch (e) {
+        msgEl.textContent = `通信エラー: ${e?.message ?? e}`;
+      }
+    });
   </script>
+  
 </body>
 </html>
