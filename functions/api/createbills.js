@@ -16,7 +16,7 @@ export async function onRequestPost(context) {
     const status = "INCOMPLETE";        // 初期状態
 
     // 日付はフロントから送られてきたものを使うか、なければ現在時刻を使う
-    const createdAt = body.date || new Date().toISOString();
+    const createdAt = new Date().toISOString();
 
     // 3. データベースに保存する (INSERT)
     await db.prepare(
@@ -24,13 +24,13 @@ export async function onRequestPost(context) {
     )
     .bind(billId, body.account_number, body.amount, body.message || "", status, createdAt)
     .run();
-
-    // 4. 支払い用のURLを作って返す
-    // 現在のサイトのドメインを取得 (例: https://kintre-app.pages.dev)
-    const origin = new URL(context.request.url).origin;
     
     // 生成されたリンク (例: https://.../pay.html?bill_id=550e8400...)
-    const paymentLink = `${origin}/pay.html?bill_id=${billId}`;
+    // 1. 今のURL（http://localhost:8788 とか https://kintre...）を取得
+    const origin = new URL(context.request.url).origin;
+
+    // 2. それを使ってリンクを作る
+    const paymentLink = `${origin}/pages/login?bill_id=${billId}`;
 
     return Response.json({ 
       success: true, 

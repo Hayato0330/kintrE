@@ -3,8 +3,18 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>請求リンクを作成</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* エラーメッセージ用のスタイルを追加 */
+    .error {
+      color: #e74c3c;
+      font-size: 0.9rem;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
 </head>
 
 <body>
@@ -14,22 +24,19 @@
 
       <div class="center-box">
 
-        <!-- 金額入力 -->
         <div class="msg">
           <div class="label">請求金額</div>
           <input id="amount" type="number" inputmode="numeric"
-                min="0" step="1" placeholder="例: 500">
+                min="1" step="1" placeholder="例: 500">
         </div>
 
-        <div id="msg"></div>
+        <div id="msg" class="error"></div>
 
-        <!-- メッセージ欄 -->
         <div class="form-container">
           <label>メッセージ<span class="optional">（任意）</span></label>
           <textarea id="message" placeholder="メッセージを入力してください…"></textarea>
         </div>
 
-        <!-- ボタン -->
         <button class="primary" id="sendBtn">請求する</button>
         <button class="primary" id="goHomeBtn">トップページに戻る</button>
 
@@ -39,8 +46,75 @@
   </div>
 
   <script>
-    document.getElementById("sendBtn").addEventListener("click", () => {
-      location.href = "step7_2.html";
+    // ▼ 設定エリア 
+    // 1. あなたのAPIのURL（ファイル名に合わせてください）
+    const API_URL = '/api/create_bills'; 
+
+    // 2. 請求者（自分）の口座番号
+    // ※本来はログイン情報から取得しますが、今はDBに実在する番号(例: 1)を指定してください
+    const myAccountNumber = 1; 
+    // ▲ 設定エリア終了
+
+
+    const sendBtn = document.getElementById("sendBtn");
+    const msgDiv = document.getElementById("msg");
+
+    sendBtn.addEventListener("click", async () => {
+      // 入力値を取得
+      const amountInput = document.getElementById("amount");
+      const messageInput = document.getElementById("message");
+      
+      const amountVal = parseInt(amountInput.value);
+      const messageVal = messageInput.value;
+
+      // エラーメッセージをリセット
+      msgDiv.textContent = "";
+
+      // バリデーション（金額チェック）
+      if (!amountVal || amountVal <= 0) {
+        msgDiv.textContent = "正しい金額を入力してください";
+        return;
+      }
+
+      // ボタンを無効化（連打防止）
+      sendBtn.disabled = true;
+      sendBtn.textContent = "作成中...";
+
+      try {
+        // バックエンドへデータを送信
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            account_number: myAccountNumber, // バックエンドの必須項目
+            amount: amountVal,               // バックエンドの必須項目
+            message: messageVal              // 任意
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          
+          const encodedUrl = encodeURIComponent(result.url);
+          
+          location.href = `step7_2.html?share_url=${encodedUrl}`;
+          
+        } else {
+          // 失敗した場合
+          throw new Error(result.error || "エラーが発生しました");
+        }
+
+      } catch (error) {
+        console.error(error);
+        msgDiv.textContent = error.message;
+        
+        // ボタンを元に戻す
+        sendBtn.disabled = false;
+        sendBtn.textContent = "請求する";
+      }
     });
 
     document.getElementById("goHomeBtn").addEventListener("click", () => {
