@@ -4,10 +4,6 @@ export async function onRequestGet(context) {
   const url = new URL(context.request.url);
   const number = String(url.searchParams.get("number") ?? "").trim();
 
-  if (!number || !name) {
-    return Response.json({ ok: false, error: "口座番号 が必要です" }, { status: 400 });
-  }
-
   try {
     const user = await db
       .prepare("SELECT name FROM Users WHERE number = ?")
