@@ -1,124 +1,129 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>請求状況確認</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>請求一覧</title>
   <link rel="stylesheet" href="style.css">
-  <script src="main.js" defer></script>
+  <style>
+    .page-title { margin: 0; }
+    .hint { color: #666; margin: 8px 16px 12px; font-size: 13px; }
+    .list-item { background: #fff; border-bottom: 1px solid #e7e7e7; padding: 12px 16px; }
+    .line1 { display: flex; justify-content: space-between; gap: 12px; }
+    .line2 { margin-top: 6px; color: #666; font-size: 13px; }
+    .status { font-weight: 700; }
+    .status.incomplete { color: #b06b00; }
+    .status.complete { color: #0a7a2f; }
+    .status.failed { color: #b00020; }
+    .message { margin: 16px; color: #b00020; white-space: pre-wrap; }
+  </style>
 </head>
-
 <body>
-    <div class="phone"> 
-          <div class="screen"> 
-  <h1>請求状況一覧</h1>
+  <div class="phone">
+    <div class="screen" style="padding:0;">
+      <h1 class="page-title">請求一覧</h1>
+      <p class="hint" id="hint"></p>
+      <div id="message" class="message" hidden></div>
+      <div id="list"></div>
+    </div>
+  </div>
 
-  <div id="message"></div>
-  <ul id="list"></ul>
+  <script>
+    const listEl = document.getElementById("list");
+    const messageEl = document.getElementById("message");
+    const hintEl = document.getElementById("hint");
 
-<script>
-// const USER_CSV = "../user_db.csv";
-// const REQUEST_CSV = "../request_db.csv";
-
-// function parseCSV(text){
-//   const lines = text.replace(/\r/g,"").split("\n").filter(l => l.trim() !== "");
-//   if(lines.length < 2) return [];
-
-//   const headers = lines[0].split(",").map(h => h.trim());
-//   const data = [];
-
-//   for(let i=1;i<lines.length;i++){
-//     const cols = lines[i].split(",").map(c => c.trim());
-//     const obj = {};
-//     headers.forEach((h, idx) => {
-//       obj[h] = cols[idx] || "";
-//     });
-//     data.push(obj);
-//   }
-//   return data;
-// }
-
-// async function main(){
-//   const messageEl = document.getElementById("message");
-//   const listEl = document.getElementById("list");
-
-//   try{
-//     const userRes = await fetch(USER_CSV, { cache: "no-store" });
-//     const reqRes  = await fetch(REQUEST_CSV, { cache: "no-store" });
-
-//     if(!userRes.ok || !reqRes.ok){
-//       throw new Error("CSVが読み込めません");
-//     }
-
-//     const users = parseCSV(await userRes.text());
-//     const requests = parseCSV(await reqRes.text());
-
-    // request が0件
-    if(requests.length === 0){
-      messageEl.textContent = "請求リンクはまだ作成されていません";
-      return;
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
     }
 
-    // number → user の対応表
-    const userMap = {};
-    users.forEach(u => {
-      userMap[u.number] = u;
-    });
+    function showError(title, detail) {
+      messageEl.hidden = false;
+      messageEl.innerHTML = "<b>" + escapeHtml(title) + "</b>\n\n" + escapeHtml(detail || "");
+      listEl.innerHTML = "";
+    }
 
-    requests.forEach(r => {
-      const li = document.createElement("li");
+    function toStatus(status) {
+      const key = String(status || "").toUpperCase();
+      if (key === "COMPLETE" || key === "PAID") return { label: "支払い済み", cls: "complete" };
+      if (key === "FAILED" || key === "ERROR") return { label: "失敗", cls: "failed" };
+      return { label: "未払い", cls: "incomplete" };
+    }
 
-      const fromUser = userMap[r.from_number];
-      const userName = fromUser ? fromUser.name : "不明なユーザー";
+    function formatAmount(amount) {
+      const num = Number(amount);
+      if (!Number.isFinite(num)) return "-";
+      return num.toLocaleString("ja-JP") + " 円";
+    }
 
-      let statusText = "未";
-      if(r.status === "paid"){
-        statusText = "✔︎";
+    function render(rows) {
+      listEl.innerHTML = "";
+
+      rows.forEach((row) => {
+        const status = toStatus(row.status);
+        const item = document.createElement("div");
+        item.className = "list-item";
+        item.innerHTML =
+          "<div class=\"line1\">" +
+            "<div><b>ID:</b> " + escapeHtml(row.bill_id || "-") + "</div>" +
+            "<div class=\"status " + status.cls + "\">" + escapeHtml(status.label) + "</div>" +
+          "</div>" +
+          "<div class=\"line2\">" +
+            "金額: " + escapeHtml(formatAmount(row.amount)) +
+            " / 請求先: " + escapeHtml(row.bill_user_id || "-") +
+          "</div>" +
+          (row.message ? "<div class=\"line2\">メッセージ: " + escapeHtml(row.message) + "</div>" : "");
+
+        listEl.appendChild(item);
+      });
+    }
+
+    async function main() {
+      const accountNumber = new URLSearchParams(location.search).get("number");
+
+      if (!accountNumber) {
+        showError("口座番号がありません", "URL に ?number=100001 のように付けて開いてください。");
+        return;
       }
 
-      li.textContent =
-        "請求ID: " + r.request_id +
-        " / 相手: " + userName +
-        " / 金額: ¥" + r.amount +
-        " / 状態: " + statusText;
+      hintEl.textContent = "口座番号: " + accountNumber;
 
-      listEl.appendChild(li);
-    });
+      try {
+        const res = await fetch("/api/getMyBilling?include_number=" + encodeURIComponent(accountNumber), {
+          cache: "no-store"
+        });
 
-  // }
-  //  catch(e){
-  //   messageEl.textContent = "請求データはありません（読み込み失敗）";
-  //   console.error(e);
-  // }
-// }
- async function main(){
-  try{
-    // ★ CSVではなくDB APIへ
-    const res = await fetch(`/api/getMyBilling?include_number=${encodeURIComponent(window.myAccountNumber)}`, {
-      cache: "no-store"
-    });
-    const data = await res.json();
+        let data;
+        try {
+          data = await res.json();
+        } catch {
+          data = null;
+        }
 
-    if(!res.ok){
-      showError("送金相手の取得に失敗", data?.error ?? "不明なエラー");
-      return;
+        if (!res.ok) {
+          showError("請求一覧の取得に失敗しました", data && data.error ? data.error : ("HTTP " + res.status));
+          return;
+        }
+
+        if (!Array.isArray(data) || data.length === 0) {
+          showError("請求一覧がありません", "まだ請求データが登録されていません。");
+          return;
+        }
+
+        messageEl.hidden = true;
+        render(data);
+      } catch (error) {
+        showError("通信エラー", error && error.message ? error.message : String(error));
+      }
     }
 
-    if(!Array.isArray(data) || data.length === 0){
-      showError("送金相手がいません", "DBに自分以外のユーザーが登録されているか確認してください。");
-      return;
-    }
-
-    render(data);
-
-  }catch(e){
-    showError("通信エラー", e?.message ?? String(e));
-  }
-}
-
-
-main();
-</script>
-</div> 
- </div> 
+    main();
+  </script>
 </body>
 </html>
