@@ -3,7 +3,7 @@
   <head>
      <meta charset="UTF-8">
       <title>口座画面</title>
-       <link rel="stylesheet" href="css/index.css">
+       <link rel="stylesheet" href="pages/style.css">
        </head> 
 
        
@@ -29,17 +29,25 @@
                   
                   
                   
-               <!-- 送金「」円 --> 
-                <div class="row" style="align-items:flex-end;"> 
-                  <div> 
-                    <div class="label">送金</div> 
-                    <button class="primary" id="sendBtn">送金</button> 
-                    <div id="msg" class="">
+      <!-- 送金する -->
+      <button class="menu-btn" id="sendBtn">
+        送金する
+        <span class="menu-arrow">›</span>
+      </button>
 
-                    </div>
-                   </div> 
+      <!-- 請求する -->
+      <button class="menu-btn" id="requestBtn">
+        請求する
+        <span class="menu-arrow">›</span>
+      </button>
 
-                   <script>
+      <!-- 請求履歴 -->
+      <button class="menu-btn" id="historyBtn">
+        請求履歴
+        <span class="menu-arrow">›</span>
+      </button>
+
+      <script>
                     document.getElementById("sendBtn").addEventListener("click", () => {
                       const acct =window.currentAccountNumber ??
                         document.getElementById("account-number")?.textContent?.trim();
@@ -50,21 +58,14 @@
                         }
                       location.href = `pages/human_select.html?number=${encodeURIComponent(acct)}`;
                     });
-                   </script>
 
-                <!--請求-->
-                 <div class="row" style="align-items:flex-end;">
-                   <div>
-                     <div class="label">請求</div>
-                      <button class="primary" id="requestBtn">請求</button>
-                       <div id="msg" class=""></div>
-                    </div>
-                  </div> 
-
-  <script>
     document.getElementById("requestBtn").addEventListener("click", () => {
-      location.href = "pages/7-1.html";
-    });
+      location.href = `pages/7-1.html?number=${encodeURIComponent(acct)}`;
+                    });
+
+    document.getElementById("requestBtn").addEventListener("click", () => {
+      location.href = `pages/7-1.html?number=${encodeURIComponent(acct)}`;
+                    });
   </script>
         </div>
   <script>
