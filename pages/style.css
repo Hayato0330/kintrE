@@ -462,25 +462,25 @@ input[type="number"]:focus{
   text-align: center;  /* テキストも中央 */
 }
 
-/* 金額行：金額を中央に、ボタンは右側に配置 */
 .balance-money-row {
   display: flex;
   align-items: center;
-  justify-content: center; /* 金額を中央寄せ */
-  gap: 20px; /* 金額とボタンの間隔 */
-  margin-top: 8px;
   width: 100%;
+  flex-wrap: nowrap;        /* ★折り返し禁止 */
+  gap: 12px;
+  margin-top: 6px;
 }
 
-/* 金額の見た目 */
+/* 金額を中央に寄せるために flex:1 で空間に広がる */
 .money-box {
+  flex: 1;                  /* ★空間を広げて中央寄せを確保 */
+  text-align: center;
+  white-space: nowrap;      /* 12,000 円 の折り返し禁止 */
   font-size: 32px;
   font-weight: 700;
-  text-align: center;
-  flex: 0 0 auto; /* 中央から動かない */
 }
 
-/* 小型バージョンのプライマリ（primary と同じ動き） */
+/* 小型ボタン：primary と同じ色変化 */
 .hide-btn {
   width: auto;
   min-height: 40px;
@@ -489,20 +489,17 @@ input[type="number"]:focus{
   border: 0;
   border-radius: 10px;
   cursor: pointer;
-  background-color: aliceblue;   /* primary と同じ */
   white-space: nowrap;
+  background-color: aliceblue;
   font-weight: 600;
 }
 
-/* hover 時：赤に変化（primary と同じ） */
 .hide-btn:hover {
   background-color: rgb(237, 4, 51);
   color: white;
 }
 
-/* クリック時（押し込み） */
 .hide-btn:active {
   background-color: rgb(200, 2, 40);
   color: white;
 }
-
