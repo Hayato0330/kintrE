@@ -86,7 +86,7 @@
         item.className = "list-item";
         item.innerHTML =
           "<div class=\"line1\">" +
-            "<div><b>ID:</b> " + escapeHtml(row.url || "-") + "</div>" +
+            "<div><b>URL:</b> " + escapeHtml(row.url || "-") + "</div>" +
             "<div class=\"status " + status.cls + "\">" + escapeHtml(status.label) + "</div>" +
           "</div>" +
           "<div class=\"line2\">" +
@@ -96,7 +96,7 @@
             "<span style='font-size:0.9em; color:#888;'>日時: " + escapeHtml(formatDate(row.created_at)) + "</span>" +
           "</div>" +
           (row.message ? "<div class=\"line2\">メッセージ: " + escapeHtml(row.message) + "</div>" : "");
-          
+
         listEl.appendChild(item);
       });
     }

@@ -30,7 +30,7 @@ body {
   clamp(16px, 4vw, 64px);}
 .phone {
   max-width: 480px;
-  margin: 0 auto;
+  margin:  auto;
   background: #fff;
   min-height: 100vh;
 }
