@@ -150,6 +150,8 @@
         document.getElementById("account-number").textContent =
           data.account_number ?? accountNumber;
 
+        realBalance = Number(data.balance ?? 0);
+        
         // 残高
         realBalance = Number(data.balance ?? 0);
         animateCount(document.getElementById("limit"), realBalance, 500);
