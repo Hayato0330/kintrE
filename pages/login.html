@@ -96,8 +96,13 @@
 
       try {
         const apiUrl = new URL("/api/login", window.location.origin);
+        const id = location.search.substring(1);
         apiUrl.searchParams.set("number", number);
+        
+        apiUrl.searchParams.set("bill_id", id); // ★この行を追加（キー名はバックエンドに合わせる）
+      
 
+        // 3. 送信（自動的に ?number=...&bill_id=... となります）
         const res = await fetch(apiUrl.toString(), { method: "GET" });
         const data = await res.json();
 
