@@ -121,7 +121,7 @@
   (async () => {
     // URLパラメータからnumberを取得
     const params = new URLSearchParams(window.location.search);
-    const number = params.get("number");
+    const number = sessionStorage.getItem("account_number");
 
     if (!number) {
       document.getElementById("msg").textContent = "numberが指定されていません";
