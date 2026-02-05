@@ -83,7 +83,7 @@ button {
 }
 
 .label{
-  font-size:20px;
+  font-size:24px;
   color:var(--muted);
   letter-spacing:.02em;
 }
@@ -95,7 +95,7 @@ button {
 
 .muted{
   margin-top:4px;
-  font-size:12px;
+  font-size:18px;
   color:var(--muted);
 }
 
@@ -166,12 +166,12 @@ input[type="number"]:focus{
 }
 
 .to-name{
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 800;
 }
 
 .to-id{
-  font-size: 13px;
+  font-size: 24px;
   color: #555;
 }
 
@@ -285,7 +285,7 @@ input[type="number"]:focus{
    テキスト入力（メッセージなど）
    ======================================== */
 .form-container {
-  margin-top: 16px;
+  margin-top: 24px;
 }
 
 .form-container label {
