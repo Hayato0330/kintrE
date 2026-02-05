@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <title>My Web Site</title>
 
-    <!-- あなたのCSS（全部コピペOK） -->
+    <!-- 共通CSS -->
     <link rel="stylesheet" href="style.css">
 
     <style>
-        /* このページだけの微調整 */
+        /* ======= このページ専用の調整だけ ======= */
+
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
@@ -22,28 +23,33 @@
         .home-container {
             text-align: center;
             width: 100%;
-            max-width: 480px;
+            max-width: 520px; /* スマホで画面いっぱい */
+            padding: 0 16px;
         }
 
+        /* ★ タイトルを画面いっぱい（最大5rem）まで自動フィット */
         h1 {
-            font-size: 50;
+            font-size: clamp(2.5rem, 9vw, 5rem); /* ← 画面幅に応じて巨大化 */
             margin-bottom: 40px;
-            color: var(--text);
+            color: rgb(248, 69, 104);
+            font-weight: 900;
+            line-height: 1.1;
+            word-break: keep-all;
         }
 
-        /* トップページ専用ボタン：
-           あなたの .primary と完全に揃える */
+        /* ★ ログインボタンも画面いっぱいに大きく */
         .home-btn {
-            width: 60%;
-            min-height: 52px;
-            padding: 12px 16px;
-            border-radius: 30px;
+            width: 100%;                      /* ← 画面の左右をフル使用 */
+            min-height: 90px !important;      /* ← 高さも大きく */
+            padding: 20px 10px !important;
+            font-size: 2.2rem !important;     /* ← 超大文字 */
+            border-radius: 40px !important;
             border: 0;
-            cursor: pointer;
+
             background-color: rgb(248, 69, 104);
-            font-size: 30;
+            color: white;
             font-weight: 800;
-            color: #fff;
+            cursor: pointer;
 
             transition: background-color 0.2s, transform 0.15s;
         }
@@ -56,13 +62,13 @@
             }
         }
 
-        /* active（スマホ・PC両方） */
+        /* active */
         .home-btn:active {
             background-color: rgb(252, 8, 57);
             transform: scale(0.97);
         }
 
-        /* 赤が残らないように focus-reset */
+        /* フォーカス色残り防止 */
         .home-btn:focus,
         .home-btn:focus-visible {
             outline: none !important;
@@ -70,6 +76,7 @@
             box-shadow: none !important;
         }
     </style>
+
 </head>
 
 <body>
@@ -77,7 +84,6 @@
 <div class="home-container">
     <h1>KINNIKU PAY</h1>
 
-    <!-- ログインボタン -->
     <button class="home-btn" onclick="location.href='pages/login-f.html'">
         ログイン
     </button>
