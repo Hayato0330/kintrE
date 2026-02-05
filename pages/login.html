@@ -119,6 +119,7 @@
     const params = new URLSearchParams(window.location.search);
     const billId = params.get("bill_id");
     currentBillId = billId;
+    sessionStorage.setItem("account_number", number);
 
     location.href = `8.html?bill_id=${billId}&number=${encodeURIComponent(data.number ?? number)}`;
 
