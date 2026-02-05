@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>送金履歴</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .page-title { margin: 0; }
+    .hint { color: #666; margin: 8px 16px 12px; font-size: 13px; }
+    .list-item { background: #fff; border-bottom: 1px solid #e7e7e7; padding: 12px 16px; }
+    .line1 { display: flex; justify-content: space-between; gap: 12px; }
+    .line2 { margin-top: 6px; color: #666; font-size: 13px; }
+    .status { font-weight: 700; }
+    .status.incomplete { color: #b06b00; }
+    .status.complete { color: #0a7a2f; }
+    .status.failed { color: #b00020; }
+    .message { margin: 16px; color: #b00020; white-space: pre-wrap; }
+    .topbar { display:flex; align-items:center; gap:10px; padding: 12px 16px; border-bottom: 1px solid #e7e7e7; background:#fff; }
+    .back-btn { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius: 10px; text-decoration:none; color:#111; }
+    .back-btn:active { transform: scale(0.98); }
+    .back-icon { width: 20px; height: 20px; }
+    .page-title { margin: 0; font-size: 18px; line-height: 1.2; }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen" style="padding:0;">
+      <div class="topbar">
+        <a class="back-btn" href="./1.html" aria-label="�߂�" title="�߂�">
+      
+
+          <svg class="back-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <h1 class="page-title">送金履歴</h1>
+      </div>
+      <p class="hint" id="hint"></p>
+      <div id="message" class="message" hidden></div>
+      <div id="list"></div>
+    </div>
+  </div>
+
+  <script>
+    const listEl = document.getElementById("list");
+    const messageEl = document.getElementById("message");
+    const hintEl = document.getElementById("hint");
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    function showError(title, detail) {
+      messageEl.hidden = false;
+      messageEl.innerHTML = "<b>" + escapeHtml(title) + "</b>\n\n" + escapeHtml(detail || "");
+      listEl.innerHTML = "";
+    }
+
+   function toStatus(status) {
+      const key = String(status || "").toUpperCase();
+      if (key === "COMPLETE" || key === "PAID") return { label: "完了", cls: "complete" };
+      if (key === "FAILED" || key === "ERROR") return { label: "失敗", cls: "failed" };
+      return { label: "未完了", cls: "incomplete" };
+    }
+    function formatAmount(amount) {
+      const num = Number(amount);
+      if (!Number.isFinite(num)) return "-";
+      return num.toLocaleString("ja-JP") + " 円";
+    }
+
+    function formatDate(isoString) {
+      if (!isoString) return "-";
+      const d = new Date(isoString);
+      if (isNaN(d.getTime())) return "-";
+      
+      return d.toLocaleString("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+    
+
+    function render(rows) {
+      listEl.innerHTML = "";
+
+      rows.forEach((row) => {
+        const status = toStatus(row.status);
+        const item = document.createElement("div");
+        item.className = "list-item";
+        item.innerHTML =
+          "<div class=\"line1\">" +
+            "<div><b>URL:</b> " + escapeHtml(row.url || "-") + "</div>" +
+            "<div class=\"status " + status.cls + "\">" + escapeHtml(status.label) + "</div>" +
+          "</div>" +
+          "<div class=\"line2\">" +
+            "金額: " + escapeHtml(formatAmount(row.amount)) +
+            " / 送金相手: " + escapeHtml(row.bill_user_id || "-") +
+            "<br>" + 
+            "<span style='font-size:0.9em; color:#888;'>日時: " + escapeHtml(formatDate(row.created_at)) + "</span>" +
+          "</div>" +
+          (row.message ? "<div class=\"line2\">メッセージ: " + escapeHtml(row.message) + "</div>" : "");
+
+        listEl.appendChild(item);
+      });
+    }
+
+    async function main() {
+      const accountNumber =sessionStorage.getItem('target_account_number');
+
+      if (!accountNumber) {
+        showError("エラー", "口座番号が見つかりません。もう一度トップページから操作してください。");
+        return;
+      }
+
+      hintEl.textContent = "送金履歴: " + accountNumber;
+
+      try {
+        const res = await fetch("/api/getMyBilling?include_number=" + encodeURIComponent(accountNumber), {
+          cache: "no-store"
+        });
+
+        let data;
+        try {
+          data = await res.json();
+        } catch {
+          data = null;
+        }
+
+        if (!res.ok) {
+          showError("送金相手がいません","DBに自分以外の送金相手が見つかりません。" + (data && data.error ? data.error : ("HTTP " + res.status)));
+          return;
+        }
+
+        if (!Array.isArray(data) || data.length === 0) {
+          showError("送金履歴がありません", "送金履歴が見つかりませんでした。");
+          return;
+        }
+
+        messageEl.hidden = true;
+        render(data);
+      } catch (error) {
+        showError("通信エラー", error && error.message ? error.message : String(error));
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
