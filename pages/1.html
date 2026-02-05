@@ -49,6 +49,9 @@
         <!-- 請求履歴 -->
         <button class="primary" type="button" id="historyBtn">請求履歴</button>
 
+      <!-- 送金履歴 -->
+       <button class="primary" type="button" id="sendHistoryBtn">送金履歴</button>
+
         <div id="msg"></div>
       </div>
     </div>
@@ -130,6 +133,30 @@
 
       sessionStorage.setItem("target_account_number", acct);
       location.href = "./9.html";
+    });
+
+     document.getElementById("sendBtn").addEventListener("click", () => {
+      const acct =
+        window.currentAccountNumber ??
+        document.getElementById("account-number")?.textContent?.trim();
+
+      if (!acct) {
+        document.getElementById("msg").textContent = "口座番号が取得できません";
+        return;
+      }
+      sessionStorage.setItem("target_account_number", acct);
+      sessionStorage.setItem('access_granted', 'true');
+      location.href = "./human_select.html";
+    });
+
+    document.getElementById("sendHistoryBtn").addEventListener("click", () => {
+      const acct =
+        window.currentAccountNumber ??
+        document.getElementById("account-number")?.textContent?.trim();
+      if (!acct) return;
+
+      sessionStorage.setItem("target_account_number", acct);
+      location.href = "./10.html";
     });
 
     /* ------------ APIから口座情報取得 ------------- */
