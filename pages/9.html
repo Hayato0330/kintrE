@@ -16,12 +16,25 @@
     .status.complete { color: #0a7a2f; }
     .status.failed { color: #b00020; }
     .message { margin: 16px; color: #b00020; white-space: pre-wrap; }
+    .topbar { display:flex; align-items:center; gap:10px; padding: 12px 16px; border-bottom: 1px solid #e7e7e7; background:#fff; }
+    .back-btn { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius: 10px; text-decoration:none; color:#111; }
+    .back-btn:active { transform: scale(0.98); }
+    .back-icon { width: 20px; height: 20px; }
+    .page-title { margin: 0; font-size: 18px; line-height: 1.2; }
   </style>
 </head>
 <body>
   <div class="phone">
     <div class="screen" style="padding:0;">
-      <h1 class="page-title">請求一覧</h1>
+      <div class="topbar">
+        <a class="back-btn" href="./1.html" aria-label="戻る" title="戻る">
+          <!-- 棒なしの左向き矢印（シェブロン） -->
+          <svg class="back-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <h1 class="page-title">請求一覧</h1>
+      </div>
       <p class="hint" id="hint"></p>
       <div id="message" class="message" hidden></div>
       <div id="list"></div>

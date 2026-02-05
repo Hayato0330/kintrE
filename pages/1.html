@@ -159,7 +159,12 @@
         window.currentAccountNumber = data.account_number ?? accountNumber;
 
         // アイコン
-        const icon = data.icon_url ?? "https://via.placeholder.com/60";
+        // const icon = data.icon_url ?? "https://via.placeholder.com/60";
+        // document.getElementById("user_icon").src = icon;
+        const icon = data.icon_url
+            ? new URL(data.icon_url, window.location.origin).href
+            : "https://via.placeholder.com/60";
+
         document.getElementById("user_icon").src = icon;
       } catch (e) {
         document.getElementById("msg").textContent = "通信エラーです";
