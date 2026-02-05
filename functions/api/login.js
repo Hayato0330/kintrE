@@ -12,7 +12,7 @@ export async function onRequestGet(context) {
       .first();
 
     const request_user = await db
-      .prepare("SELECT user_id FROM bill WHERE number = ?")
+      .prepare("SELECT user_id FROM bill WHERE bill_id = ?")
       .bind(bill_id)
       .first();
     
