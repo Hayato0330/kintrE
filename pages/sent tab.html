@@ -172,7 +172,7 @@
           })
         });
 
-        const txResult = await response.json();
+        const txResult = await txRes.json();
 
         if (!txRes.ok && txResult.success) {
           throw new Error(txResult.message || txResult.error || "送金に失敗しました");
