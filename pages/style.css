@@ -130,6 +130,7 @@ input[type="number"]:focus{
   cursor:pointer;
   background-color: rgb(255, 174, 190);
   padding: 8px 16px;
+  color: white;
 }
 
 .primary:hover {
@@ -492,6 +493,7 @@ input[type="number"]:focus{
   cursor:pointer;
   background-color: rgb(255, 174, 190); /* 薄い青 */
   white-space:nowrap;
+  color: white;
 }
 
 /* スマホのタップ中（ここが一番重要） */
@@ -548,6 +550,7 @@ input[type="number"]:focus{
   border-radius: 10px;
   cursor: pointer;
   background-color:  rgb(255, 174, 190);
+  color: white;
   font-weight: 600;
 }
 
@@ -562,6 +565,7 @@ input[type="number"]:focus{
 @media (hover: none) {
   .hide-btn:hover{
     background-color: rgb(255, 174, 190) !important;
+    color: white;
   }
 }
 
