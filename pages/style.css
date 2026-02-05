@@ -30,6 +30,11 @@ body {
   clamp(16px, 4vw, 64px);
   background: ffffff;
 }
+.container1 {
+  padding: 0 
+  clamp(16px, 4vw, 64px);
+  background: rgb(248, 69, 104);
+}
 .phone {
   max-width: 480px;
   margin:  auto;
@@ -91,6 +96,7 @@ button {
 .value{
   font-size:40px;
   font-weight:700;
+  width: 100%;
 }
 
 .muted{
