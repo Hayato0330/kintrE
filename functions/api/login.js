@@ -15,6 +15,7 @@ export async function onRequestGet(context) {
       .prepare("SELECT user_id FROM bill WHERE number = ?")
       .bind(bill_id)
       .first();
+    
 
     if (request_user?.user_id == number) {
       return Response.json({ ok: false, error: "請求者と支払い者が同じです" }, { status: 403 });
