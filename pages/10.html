@@ -76,6 +76,9 @@
       cache: "no-store"
     });
     const data = await res.json();
+     
+    console.log("accounts response:", data);
+
     if (!res.ok) return null;
 
     // accounts.js の返却仕様に完全一致させる
@@ -185,8 +188,6 @@
   }
 
   main();
-
-  console.log(data.icon_url)
 </script>
 
 </body>
