@@ -290,21 +290,21 @@ input[type="number"]:focus{
 
 .form-container label {
   display: block;
-  font-size: 13px;
+  font-size: 24px;
   color: var(--muted);
   margin-bottom: 6px;
 }
 
 .form-container .optional {
   color: #aaa;
-  font-size: 12px;
+  font-size: 24px;
 }
 
 .form-container textarea {
   width: 100%;
   min-height: 80px;
   padding: 12px;
-  font-size: 16px;
+  font-size: 18px;
   border: 1px solid var(--border);
   border-radius: 12px;
   outline: none;

@@ -3,7 +3,7 @@ export async function onRequestPut(context) {
 
   try {
     const body = await context.request.json();
-    const { bill_id, user_id } = body;
+    const { bill_id, user_id, amount } = body;
 
     if (!bill_id) {
       return Response.json({ error: "bill_idが必要です" }, { status: 400 });
@@ -28,7 +28,8 @@ export async function onRequestPut(context) {
       message: "請求が完了しました",
       bill_id: bill_id,
       status: "complete",
-      bill_user_id: user_id
+      bill_user_id: user_id,
+      amount: amount // フロントエンドから渡されたamountを返す
     });
 
   } catch (e) {

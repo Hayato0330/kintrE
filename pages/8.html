@@ -57,7 +57,9 @@
 
 <script>
   let currentBillId = null;
+  let currentBillData = null;
 
+  // 請求情報を取得
   (async () => {
     // URLパラメータからbill_idを取得
     const params = new URLSearchParams(window.location.search);
@@ -81,6 +83,9 @@
         return;
       }
 
+      // グローバル変数に保存
+      currentBillData = data;
+
       // 表示を更新
       document.getElementById("sender-name").textContent = data.sender_name ?? "---";
       document.getElementById("requestAmount").textContent = Number(data.amount ?? 0).toLocaleString("ja-JP");
@@ -92,8 +97,37 @@
     }
   })();
 
+  // 上限金額（残高）を取得
+  (async () => {
+    // URLパラメータからnumberを取得
+    const params = new URLSearchParams(window.location.search);
+    const number = params.get("number");
 
+    if (!number) {
+      document.getElementById("msg").textContent = "numberが指定されていません";
+      return;
+    }
 
+    try {
+      // APIを呼び出して残高情報を取得
+      const res = await fetch(`/api/balance?number=${encodeURIComponent(number)}`);
+      console.log(res);
+      const data = await res.json();
+      console.log(data);
+
+      if (!res.ok) {
+        document.getElementById("msg").textContent = data?.error ?? "読み込みに失敗しました";
+        return;
+      }
+
+      // 表示を更新
+      document.getElementById("limit").textContent = data.balance ?? "---";
+
+    } catch (e) {
+      document.getElementById("msg").textContent = "通信エラーです";
+      console.error(e);
+    }
+  })();
 
   // 送金ボタンのクリックイベント
   document.getElementById("sendBtn").addEventListener("click", async () => {
@@ -110,27 +144,67 @@
       return;
     }
 
+    if (!currentBillData) {
+      document.getElementById("msg").textContent = "請求情報が読み込まれていません";
+      return;
+    }
+
+    // URLパラメータからnumberを取得
+    const params = new URLSearchParams(window.location.search);
+    const senderNumber = params.get("number");
+
+    if (!senderNumber) {
+      document.getElementById("msg").textContent = "送金元のnumberが取得できません";
+      return;
+    }
+
     try {
       // 送金中の表示
       document.getElementById("sendBtn").disabled = true;
       document.getElementById("sendBtn").textContent = "送金中...";
 
-      // update_bill APIを呼び出し
-      const res = await fetch("/api/updatebills", {
+      const amount = currentBillData.amount;
+      const recipientNumber = currentBillData.sender_number; // 請求元のnumber
+
+      // 1. update_bill APIを呼び出し（請求ステータスを更新）
+      const updateRes = await fetch("/api/updatebills", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
           bill_id: currentBillId,
-          user_id: userId
+          user_id: userId,
+          amount: amount
         })
       });
 
-      const data = await res.json();
+      const updateData = await updateRes.json();
 
-      if (!res.ok) {
-        document.getElementById("msg").textContent = data?.error ?? "更新に失敗しました";
+      if (!updateRes.ok) {
+        document.getElementById("msg").textContent = updateData?.error ?? "更新に失敗しました";
+        document.getElementById("sendBtn").disabled = false;
+        document.getElementById("sendBtn").textContent = "送金する";
+        return;
+      }
+
+      // 2. send APIを呼び出して残高を更新
+      const sendRes = await fetch("/api/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          sender_number: senderNumber,
+          recipient_number: recipientNumber,
+          amount: amount
+        })
+      });
+
+      const sendData = await sendRes.json();
+
+      if (!sendRes.ok) {
+        document.getElementById("msg").textContent = sendData?.error ?? "送金処理に失敗しました";
         document.getElementById("sendBtn").disabled = false;
         document.getElementById("sendBtn").textContent = "送金する";
         return;
@@ -144,156 +218,6 @@
       document.getElementById("sendBtn").disabled = false;
       document.getElementById("sendBtn").textContent = "送金する";
       console.error(e);
-    }
-  });
-</script>
-
- 
-<script>
-  (async () => {
-    // URLパラメータからnumberを取得
-    const params = new URLSearchParams(window.location.search);
-    const number = params.get("number");
-  
-
-    if (!number) {
-      document.getElementById("msg").textContent = "nemberが指定されていません";
-      return;
-    }
-
-    try {
-      // APIを呼び出して請求情報を取得
-      const res = await fetch(`/api/balance?number=${encodeURIComponent(number)}`);
-      console.log(res);
-      const data = await res.json();
-      console.log(data);
-
-      if (!res.ok) {
-        document.getElementById("msg").textContent = data?.error ?? "読み込みに失敗しました";
-        return;
-      }
-
-      // 表示を更新
-      document.getElementById("limit").textContent = data.balance ?? "---";
-
-
-    } catch (e) {
-      document.getElementById("msg").textContent = "通信エラーです";
-      console.error(e);
-    }
-  })();
-  </script>
-
-
-    <!-- 7 送金ボタンクリック時 -->
-<script>
-    btn.addEventListener("click", async () => {
-      const amountInput = document.getElementById("amount");
-      const amount = parseInt(amountInput.value);
-
-      msgDiv.textContent = "";
-
-      // バリデーション
-      if (!amount || amount <= 0) {
-        msgDiv.textContent = "正しい金額を入力してください。";
-        return;
-      }
-      if (amount > senderData.balance) {
-        msgDiv.textContent = "残高不足です。";
-        return;
-      }
-
-      // 二重送信防止
-      btn.disabled = true;
-      btn.textContent = "送金処理中...";
-
-      try {
-        const response = await fetch(API_SEND_MONEY, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            sender_id: senderId,
-            recipient_id: recipientId,
-            amount: amount,
-            message: "送金"
-          })
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-          // alert("送金が完了しました！");
-          // 完了画面へ (ファイル名に合わせてください)
-          location.href = "4.html"; 
-        } else {
-          throw new Error(result.message || result.error || "送金に失敗しました");
-        }
-
-      } catch (error) {
-        msgDiv.textContent = error.message;
-        btn.disabled = false;
-        btn.textContent = "送金する";
-      }
-    });
-  </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script>
-  const sendBtn = document.getElementById("sendBtn");
-  const msg = document.getElementById("msg");
-
-  // URLから bill_id を取得
-  const params = new URLSearchParams(window.location.search);
-  const billId = params.get("bill_id");
-
-  sendBtn.addEventListener("click", async () => {
-    if (!billId) {
-      msg.textContent = "bill_idが取得できません";
-      return;
-    }
-
-    sendBtn.disabled = true;
-    msg.textContent = "送金処理中…";
-
-    try {
-      const res = await fetch("/api/pay", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          bill_id: billId
-        })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        msg.textContent = data.error || "送金に失敗しました";
-        sendBtn.disabled = false;
-        return;
-      }
-
-      // 成功 → 完了画面へ
-      window.location.href = "4.html";
-
-    } catch (e) {
-      console.error(e);
-      msg.textContent = "通信エラーです";
-      sendBtn.disabled = false;
     }
   });
 </script>
