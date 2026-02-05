@@ -23,26 +23,22 @@
         .home-container {
             text-align: center;
             width: 100%;
-            max-width: 520px; /* スマホで画面いっぱい */
+            max-width: 520px;
             padding: 0 16px;
         }
 
-        /* ★ タイトルを画面いっぱい（最大5rem）まで自動フィット */
-        h1 {
-            font-size: clamp(2.5rem, 9vw, 5rem); /* ← 画面幅に応じて巨大化 */
+        /* ★ ロゴ画像のサイズ調整（画面幅に応じて拡大） */
+        .logo {
+            width: clamp(200px, 70vw, 500px); 
+            height: auto;
             margin-bottom: 40px;
-            color: rgb(248, 69, 104);
-            font-weight: 900;
-            line-height: 1.1;
-            word-break: keep-all;
         }
 
-        /* ★ ログインボタンも画面いっぱいに大きく */
         .home-btn {
-            width: 100%;                      /* ← 画面の左右をフル使用 */
-            min-height: 90px !important;      /* ← 高さも大きく */
+            width: 100%;
+            min-height: 90px !important;
             padding: 20px 10px !important;
-            font-size: 2.2rem !important;     /* ← 超大文字 */
+            font-size: 2.2rem !important;
             border-radius: 40px !important;
             border: 0;
 
@@ -54,7 +50,6 @@
             transition: background-color 0.2s, transform 0.15s;
         }
 
-        /* hover（PCのみ） */
         @media (hover: hover) and (pointer: fine) {
             .home-btn:hover {
                 background-color: rgb(252, 8, 57);
@@ -62,13 +57,11 @@
             }
         }
 
-        /* active */
         .home-btn:active {
             background-color: rgb(252, 8, 57);
             transform: scale(0.97);
         }
 
-        /* フォーカス色残り防止 */
         .home-btn:focus,
         .home-btn:focus-visible {
             outline: none !important;
@@ -76,13 +69,14 @@
             box-shadow: none !important;
         }
     </style>
-
 </head>
 
 <body>
 
 <div class="home-container">
-    <h1>KINNIKU PAY</h1>
+
+    <!-- ★ ここを画像に変更 -->
+    <img src="kinniku_pay_logo_full_red.png" class="logo" alt="KinnikuPay Logo">
 
     <button class="home-btn" onclick="location.href='pages/login-f.html'">
         ログイン
