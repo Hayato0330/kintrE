@@ -170,6 +170,11 @@ input[type="number"]:focus{
   color: #777;
 }
 
+.sentj{
+  font-size: 12px;
+  color: #1d0000e1;
+}
+
 .to-name{
   font-size: 24px;
   font-weight: 800;
