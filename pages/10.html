@@ -43,117 +43,157 @@
   </div>
 
   <script>
-    const listEl = document.getElementById("list");
-    const messageEl = document.getElementById("message");
-    const hintEl = document.getElementById("hint");
+  const listEl = document.getElementById("list");
+  const messageEl = document.getElementById("message");
+  const hintEl = document.getElementById("hint");
 
-    function escapeHtml(value) {
-      return String(value).replace(/[&<>"']/g, (char) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      }[char]));
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char]));
+  }
+
+  function showError(title, detail) {
+    messageEl.hidden = false;
+    messageEl.innerHTML = "<b>" + escapeHtml(title) + "</b>\n\n" + escapeHtml(detail || "");
+    listEl.innerHTML = "";
+  }
+
+  function formatAmount(amount) {
+    const num = Number(amount);
+    if (!Number.isFinite(num)) return "-";
+    return num.toLocaleString("ja-JP") + " 円";
+  }
+
+  // 送信先情報を accounts API から取得する．
+  // 注意：このURLとレスポンス形式は，あなたの /api/accounts 実装に合わせて調整する必要がある．
+    async function fetchAccountInfo(accountNumber) {
+    try {
+        const res = await fetch("/api/accounts?number=" + encodeURIComponent(accountNumber), { cache: "no-store" });
+        const data = await res.json();
+        if (!res.ok) return null;
+
+        // 配列でも単体でも対応（sent tab.htmlと同じ）:contentReference[oaicite:3]{index=3}
+        const obj = Array.isArray(data) ? data[0] : data;
+        if (!obj) return null;
+
+        // フィールド名の候補（あなたのAPIに合わせて増減してよい）
+        const name = obj.name ?? obj.username ?? obj.user_name ?? null;
+
+        let icon = obj.icon ?? obj.icon_url ?? obj.avatar ?? obj.avatar_url ?? obj.image ?? null;
+
+        // iconが相対パスなら絶対URLに補正
+        if (icon && typeof icon === "string") {
+        const trimmed = icon.trim();
+        if (trimmed.startsWith("/")) {
+            icon = new URL(trimmed, location.origin).toString();
+        }
+        }
+
+        // デバッグしたいなら一旦これを有効化
+        // console.log("accounts:", obj);
+
+        return { name, icon };
+    } catch (e) {
+        console.error("fetchAccountInfo failed:", e);
+        return null;
+    }
     }
 
-    function showError(title, detail) {
-      messageEl.hidden = false;
-      messageEl.innerHTML = "<b>" + escapeHtml(title) + "</b>\n\n" + escapeHtml(detail || "");
-      listEl.innerHTML = "";
-    }
 
-   function toStatus(status) {
-      const key = String(status || "").toUpperCase();
-      if (key === "COMPLETE" || key === "PAID") return { label: "完了", cls: "complete" };
-      if (key === "FAILED" || key === "ERROR") return { label: "失敗", cls: "failed" };
-      return { label: "未完了", cls: "incomplete" };
-    }
-    function formatAmount(amount) {
-      const num = Number(amount);
-      if (!Number.isFinite(num)) return "-";
-      return num.toLocaleString("ja-JP") + " 円";
-    }
+  function render(rows) {
+    listEl.innerHTML = "";
 
-    function formatDate(isoString) {
-      if (!isoString) return "-";
-      const d = new Date(isoString);
-      if (isNaN(d.getTime())) return "-";
-      
-      return d.toLocaleString("ja-JP", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-    }
-    
+    rows.forEach((row) => {
+      const item = document.createElement("div");
+      item.className = "list-item";
 
-    function render(rows) {
-      listEl.innerHTML = "";
+      const iconHtml = row.to_icon
+        ? "<img src=\"" + escapeHtml(row.to_icon) + "\" alt=\"icon\" style=\"width:36px;height:36px;border-radius:12px;object-fit:cover;\">"
+        : "<div style=\"width:36px;height:36px;border-radius:12px;background:#f2f2f2;display:flex;align-items:center;justify-content:center;\">👤</div>";
 
-      rows.forEach((row) => {
-        const status = toStatus(row.status);
-        const item = document.createElement("div");
-        item.className = "list-item";
-        item.innerHTML =
-          "<div class=\"line1\">" +
-            "<div><b>URL:</b> " + escapeHtml(row.url || "-") + "</div>" +
-            "<div class=\"status " + status.cls + "\">" + escapeHtml(status.label) + "</div>" +
+      const nameText = row.to_name ? row.to_name : "-";
+
+      item.innerHTML =
+        "<div class=\"line1\" style=\"align-items:center;\">" +
+          "<div style=\"display:flex;align-items:center;gap:10px;\">" +
+            iconHtml +
+            "<div>" +
+              "<div><b>送信先:</b> " + escapeHtml(String(row.to_id ?? "-")) + "</div>" +
+              "<div style=\"font-size:13px;color:#666;\">" + escapeHtml(nameText) + "</div>" +
+            "</div>" +
           "</div>" +
-          "<div class=\"line2\">" +
-            "金額: " + escapeHtml(formatAmount(row.amount)) +
-            " / 送金相手: " + escapeHtml(row.bill_user_id || "-") +
-            "<br>" + 
-            "<span style='font-size:0.9em; color:#888;'>日時: " + escapeHtml(formatDate(row.created_at)) + "</span>" +
-          "</div>" +
-          (row.message ? "<div class=\"line2\">メッセージ: " + escapeHtml(row.message) + "</div>" : "");
+          "<div><b>" + escapeHtml(formatAmount(row.amount)) + "</b></div>" +
+        "</div>" +
+        (row.message ? "<div class=\"line2\">メッセージ: " + escapeHtml(row.message) + "</div>" : "");
 
-        listEl.appendChild(item);
-      });
+      listEl.appendChild(item);
+    });
+  }
+
+  async function main() {
+    // ここは 10.html 既存と同じキーを使う．:contentReference[oaicite:4]{index=4}
+    const fromIdRaw = sessionStorage.getItem("target_account_number");
+
+    if (!fromIdRaw) {
+      showError("エラー", "送金元IDが見つかりません。もう一度トップページから操作してください。");
+      return;
     }
 
-    async function main() {
-      const accountNumber =sessionStorage.getItem('target_account_number');
+    // getMySending.js は from_id を整数として要求する．:contentReference[oaicite:5]{index=5}
+    const fromId = parseInt(fromIdRaw, 10);
+    if (!Number.isInteger(fromId)) {
+      showError("エラー", "送金元IDが整数ではありません。");
+      return;
+    }
 
-      if (!accountNumber) {
-        showError("エラー", "口座番号が見つかりません。もう一度トップページから操作してください。");
+    hintEl.textContent = "送金履歴: " + fromId;
+
+    try {
+      // getMySending.js に合わせる（クエリ名は from_id）:contentReference[oaicite:6]{index=6}
+      const res = await fetch("/api/getMySending?from_id=" + encodeURIComponent(fromId), {
+        cache: "no-store"
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError("取得エラー", (data && data.error) ? data.error : ("HTTP " + res.status));
         return;
       }
 
-      hintEl.textContent = "送金履歴: " + accountNumber;
+      // 返り値は { success, from_id, history: [...] } :contentReference[oaicite:7]{index=7}
+      const history = data && Array.isArray(data.history) ? data.history : [];
 
-      try {
-        const res = await fetch("/api/getMyBilling?include_number=" + encodeURIComponent(accountNumber), {
-          cache: "no-store"
-        });
-
-        let data;
-        try {
-          data = await res.json();
-        } catch {
-          data = null;
-        }
-
-        if (!res.ok) {
-          showError("送金相手がいません","DBに自分以外の送金相手が見つかりません。" + (data && data.error ? data.error : ("HTTP " + res.status)));
-          return;
-        }
-
-        if (!Array.isArray(data) || data.length === 0) {
-          showError("送金履歴がありません", "送金履歴が見つかりませんでした。");
-          return;
-        }
-
-        messageEl.hidden = true;
-        render(data);
-      } catch (error) {
-        showError("通信エラー", error && error.message ? error.message : String(error));
+      if (history.length === 0) {
+        showError("送金履歴がありません", "送金履歴が見つかりませんでした。");
+        return;
       }
-    }
 
-    main();
-  </script>
+      // to_id から送信先の名前，アイコンを引いて合体
+      const enriched = await Promise.all(history.map(async (row) => {
+        const info = await fetchAccountInfo(row.to_id);
+        return {
+          ...row,
+          to_name: info?.name ?? null,
+          to_icon: info?.icon ?? null
+        };
+      }));
+
+      messageEl.hidden = true;
+      render(enriched);
+
+    } catch (error) {
+      showError("通信エラー", error && error.message ? error.message : String(error));
+    }
+  }
+
+  main();
+</script>
+
 </body>
 </html>
