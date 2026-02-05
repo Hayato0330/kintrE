@@ -10,13 +10,37 @@
     .loading { opacity: 0.5; pointer-events: none; }
     /* エラーメッセージ */
     .error-msg { color: #e74c3c; font-size: 0.9em; margin-top: 10px; font-weight: bold; text-align: center; }
-    /* 数値入力のスタイル調整 */
-    input[type="number"] { width: 100%; box-sizing: border-box; padding: 10px; font-size: 16px; }
+
+    /* 入力欄：スクショ寄せで少し大きく */
+    input[type="number"] { width: 100%; box-sizing: border-box; padding: 18px; font-size: 22px; border-radius: 18px; border: 1px solid #e6e6e6; }
+    textarea { width: 100%; box-sizing: border-box; padding: 18px; font-size: 20px; border-radius: 18px; border: 1px solid #e6e6e6; }
+
+    /* 仕切り線（HTML内で完結） */
+    .divider { border: none; border-top: 1px solid #eee; margin: 0; }
+
+    /* 残高の行を薄グレー帯に */
+    .balance-band { background: #f3f3f3; }
+
+    /* 残高を大きく、右寄せ */
+    .balance-big {
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    /* 送金金額のrowを縦並びに */
+    .amount-row { align-items: stretch !important; flex-wrap: nowrap !important; }
+    .amount-head { width: 100%; margin-bottom: 12px; }
+    .amount-head .muted { font-size: 14px !important; color: #666 !important; margin-top: 6px; }
+
+    /* ボタンを大きめに */
+    .primary-wide { width: 100%; min-height: 86px; border-radius: 22px; font-size: 24px; font-weight: 800; }
+    button:disabled { opacity: 0.6; }
   </style>
 </head>
 
 <body>
- 
   <header class="to-header">
     <div class="to-name">送金先</div>
     <div class="to-id" id="recipient-name">読み込み中...</div>
@@ -25,43 +49,40 @@
     </div>
   </header>
 
+  <!-- 残高：薄グレー帯 + 右側大きく -->
   <div class="row">
     <div class="label">上限金額 (残高)</div>
-    <div class="value"><span id="limit-balance">---</span> 円</div>
+    <div class="value balance-big"><span id="limit-balance">---</span> 円</div>
   </div>
 
-  <hr style="border:none;border-top:1px solid #eee;margin:12px 0;">
+  <hr class="divider">
 
-  <div class="row" style="align-items:flex-end; flex-wrap: wrap;">
-    <div style="width: 100%; margin-bottom: 5px;">
+  <!-- 送金金額：ラベル＋補足 → 入力欄（縦並び） -->
+  <div class="row amount-row">
+    <div class="amount-head">
       <div class="label">送金金額</div>
-      <div class="muted" style="font-size:0.8em; color:#666;">0〜上限の範囲で入力</div>
+      <div class="muted">0〜上限の範囲で入力</div>
     </div>
-    
+
     <input id="amount" type="number" inputmode="numeric" min="1" step="1" placeholder="例: 1000" />
   </div>
+
+  <hr class="divider">
 
   <div class="form-container">
     <label>メッセージ<span class="optional">（任意）</span></label>
     <textarea id="message" placeholder="メッセージを入力してください…"></textarea>
   </div>
 
-  <button type="button" class="primary" id="sendBtn" disabled>読み込み中...</button>
-   
+  <button type="button" class="primary primary-wide" id="sendBtn" disabled>読み込み中...</button>
+
   <div id="msg" class="error-msg"></div>
 
   <script>
-    // ▼ APIのパス（あなたの環境に合わせてください）
-    // ユーザー情報を取るAPI (例: /api/users?account_number=123)
-    const API_GET_USER = '/api/accounts'; 
-    // 送金API
+    const API_GET_USER = '/api/accounts';
     const API_SEND_MONEY = '/api/transactions';
 
-
-    // 前の画面で保存したキー名に合わせて取得
-    // 自分の番号
-    const senderId = sessionStorage.getItem('target_account_number') 
-    // 相手の番号
+    const senderId = sessionStorage.getItem('target_account_number');
     const recipientId = sessionStorage.getItem('send_to_account');
 
     let senderData = null;
@@ -70,34 +91,25 @@
     const btn = document.getElementById("sendBtn");
     const msgDiv = document.getElementById("msg");
 
-    // 画面読み込み時に実行
     window.onload = async () => {
-      // IDがない場合はエラー
       if (!senderId || !recipientId) {
         msgDiv.textContent = "エラー: 送金元または送金先の情報が不足しています。トップからやり直してください。";
         return;
       }
 
-      console.log(`自分: ${senderId}, 相手: ${recipientId}`);
-
       try {
-        // 自分と相手の情報を同時に取得
-        // ※注意: APIのURLパラメータ(?number=...)は、あなたのバックエンドの実装に合わせてください
         const [senderRes, recipientRes] = await Promise.all([
-            fetch(`${API_GET_USER}?number=${encodeURIComponent(senderId)}`),
-            fetch(`${API_GET_USER}?number=${encodeURIComponent(recipientId)}`)
+          fetch(`${API_GET_USER}?number=${encodeURIComponent(senderId)}`),
+          fetch(`${API_GET_USER}?number=${encodeURIComponent(recipientId)}`)
         ]);
 
         if (!senderRes.ok || !recipientRes.ok) {
           throw new Error("ユーザー情報の取得に失敗しました");
         }
 
-        // データを取り出す
-        // もしAPIが配列 [ {user...} ] で返してくるなら data[0] にする処理が必要
         const sData = await senderRes.json();
         const rData = await recipientRes.json();
 
-        // APIが配列で返すかオブジェクトで返すかで分岐（念のため）
         senderData = Array.isArray(sData) ? sData[0] : sData;
         recipientData = Array.isArray(rData) ? rData[0] : rData;
 
@@ -114,33 +126,24 @@
     };
 
     function updateUI() {
-      // 画面に表示
       document.getElementById("recipient-name").textContent = recipientData.name || "名称未設定";
-      // 口座番号を表示 (APIのキー名が account_number か number かに合わせて調整)
       document.getElementById("recipient-number").textContent = recipientData.account_number || recipientData.number;
-      
-      // 残高を表示
+
       document.getElementById("limit-balance").textContent = (senderData.balance || 0).toLocaleString();
 
-      // 入力欄の上限設定
       const amountInput = document.getElementById("amount");
-      if (amountInput) {
-        amountInput.max = senderData.balance;
-      }
+      if (amountInput) amountInput.max = senderData.balance;
 
-      // ボタンを有効化
       btn.disabled = false;
       btn.textContent = "送金する";
     }
 
-    // 送金ボタンクリック時
     btn.addEventListener("click", async () => {
       const amountInput = document.getElementById("amount");
       const amount = parseInt(amountInput.value);
 
       msgDiv.textContent = "";
 
-      // バリデーション
       if (!amount || amount <= 0) {
         msgDiv.textContent = "正しい金額を入力してください。";
         return;
@@ -150,7 +153,6 @@
         return;
       }
 
-      // 二重送信防止
       btn.disabled = true;
       btn.textContent = "送金処理中...";
 
@@ -169,9 +171,7 @@
         const result = await response.json();
 
         if (response.ok && result.success) {
-          // alert("送金が完了しました！");
-          // 完了画面へ (ファイル名に合わせてください)
-          location.href = "4.html"; 
+          location.href = "4.html";
         } else {
           throw new Error(result.message || result.error || "送金に失敗しました");
         }
