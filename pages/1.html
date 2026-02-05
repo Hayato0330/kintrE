@@ -177,6 +177,8 @@
       if (!acct) return;
 
       sessionStorage.setItem("target_account_number", acct);
+      sessionStorage.setItem('access_granted', 'true');
+
       location.href = "./10.html";
     });
 
