@@ -122,7 +122,7 @@
     sessionStorage.setItem("account_number", number);
     sessionStorage.setItem('access_granted', 'true');
 
-    location.href = `8.html?bill_id=${billId}&number=${encodeURIComponent(data.number ?? number)}`;
+    location.href = `8.html?bill_id=${billId}`;
 
       } catch (e) {
         showMsg("通信エラーです");

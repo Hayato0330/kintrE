@@ -173,8 +173,7 @@ document.getElementById("limit").textContent =
 
     // URLパラメータからnumberを取得
     const params = new URLSearchParams(window.location.search);
-    const senderNumber = params.get("number");
-
+    const senderNumber = sessionStorage.getItem("account_number");
     if (!senderNumber) {
       document.getElementById("msg").textContent = "送金元のnumberが取得できません";
       return;
