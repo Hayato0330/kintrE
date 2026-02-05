@@ -27,7 +27,7 @@
   <div class="phone">
     <div class="screen" style="padding:0;">
       <div class="topbar">
-        <a class="back-btn" href="./1.html" aria-label="戻る" title="戻る">
+        <a class="back-btn" href="./1.html" onclick="sessionStorage.setItem('access_granted', 'true');" aria-label="戻る" title="戻る">
           <!-- 棒なしの左向き矢印（シェブロン） -->
           <svg class="back-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -40,7 +40,26 @@
       <div id="list"></div>
     </div>
   </div>
+  <script>
+  // 1. 通行手形（access_granted）があるかチェック
+  if (!sessionStorage.getItem('access_granted')) {
+    
+    // ▼ 手形がない場合（直打ち）
+    alert("不正なアクセスです。最初からやり直してください。");
+    // トップページや前の画面に強制的に戻す
+    location.href = "/";
 
+  } else {
+
+    // ▼ 手形がある場合（正規ルート）
+    
+    // 2. 二度とこの画面を表示させないため（リロード対策）、手形をすぐに破り捨てる
+    sessionStorage.removeItem('access_granted');
+
+    // そのまま画面を表示する処理へ...
+    console.log("正規のアクセスです");
+  }
+</script>
   <script>
     const listEl = document.getElementById("list");
     const messageEl = document.getElementById("message");
