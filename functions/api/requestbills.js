@@ -19,9 +19,9 @@ export async function onRequestGet(context) {
       return Response.json({ error: "その請求は見つかりません" }, { status: 404 });
     }
 
-    // user_idを使ってUsersテーブルから送信元の名前を取得
+    // user_idを使ってUsersテーブルから送信元の名前とnumberを取得
     const user = await db
-      .prepare("SELECT name FROM Users WHERE number = ?")
+      .prepare("SELECT name, number FROM Users WHERE number = ?")
       .bind(bill.user_id)
       .first();
 
@@ -34,7 +34,8 @@ export async function onRequestGet(context) {
       amount: bill.amount,
       message: bill.message,
       sender_name: user.name,
-      sender_id: bill.user_id
+      sender_id: bill.user_id,
+      sender_number: user.number  // numberを追加（受取人のnumber）
     });
     
   } catch (e) {
