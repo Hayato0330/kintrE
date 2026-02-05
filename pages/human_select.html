@@ -110,6 +110,7 @@ function render(users){
         return;
       }
       sessionStorage.setItem("send_to_account", toAcct);
+      sessionStorage.setItem('access_granted', 'true');
       location.href = "./sent tab.html";
     });
 
@@ -138,6 +139,7 @@ function render(users){
         return;
       }
       sessionStorage.setItem("send_to_account", toAcct);
+      sessionStorage.setItem('access_granted', 'true');
       location.href = "./sent tab.html";
     });
 
