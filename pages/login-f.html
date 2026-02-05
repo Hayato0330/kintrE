@@ -1,19 +1,16 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ログイン画面</title>
-
-  
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   <div class="phone">
     <div class="screen">
-
-       <div style="
+      <div style="
         min-height:100vh;
         display:flex;
         flex-direction:column;
@@ -24,21 +21,16 @@
         width:100%;
         box-sizing:border-box;
       ">
-
-        
         <div class="to-name" style="font-size:22px;font-weight:800;margin-bottom:10px; width:100%;">
           ログイン画面
         </div>
 
-        <!-- サブテキスト -->
         <div class="to-id" style="font-size:14px;color:#555;margin-bottom:22px; width:100%;">
-          口座番号 PASSWORD 入力してください
+          口座番号とPASSWORDを入力してください
         </div>
-
 
         <div style="width:100%; margin-bottom:14px;">
           <div class="label" style="margin-bottom:6px;">口座番号</div>
-
           <input
             id="account_number"
             type="number"
@@ -48,11 +40,8 @@
           />
         </div>
 
-      
-
         <div style="width:100%; margin-bottom:14px;">
           <div class="label" style="margin-bottom:6px;">PASSWORD</div>
-
           <input
             id="password"
             type="password"
@@ -61,7 +50,6 @@
             style="width:100%; box-sizing:border-box;"
           />
         </div>
-  
 
         <div id="msg" style="
           width:100%;
@@ -72,112 +60,60 @@
           color:#c00;
         "></div>
 
-        <!-- ログイン -->
         <button class="primary" id="loginBtn"
           style="width:100%; box-sizing:border-box; margin-bottom:12px;">
           ログイン
         </button>
 
-
         <script>
-    // ▼ APIのパス（あなたの環境に合わせてください）
-    // ユーザー情報を取るAPI (例: /api/users?account_number=123)
-    const API_LOGIN = '/api/login'; 
+          const API_LOGIN = "/api/loginf";
 
+          const accountEl = document.getElementById("account_number");
+          const passEl = document.getElementById("password");
+          const btn = document.getElementById("loginBtn");
+          const msgDiv = document.getElementById("msg");
 
-    // 前の画面で保存したキー名に合わせて取得
-    // 自分の番号
-    const user = sessionStorage.getItem('account_number') 
-    const passEL = document.getElementById("password");
-    const btn = document.getElementById("loginBtn");
-    const msgDiv = document.getElementById("msg");
+          btn.addEventListener("click", async () => {
+            msgDiv.textContent = "";
 
-    btn.addEventListener("click", async () => {
-      msgDiv.textContent = "";
-      
-      const password = passEL.value;
-      if (!password) {
-        msgDiv.textContent = "パスワードを入力してください。";
-        return;
-      }
+            const accountNumber = accountEl.value.trim();
+            const password = passEl.value;
 
-      try {
-        const response = await fetch(API_LOGIN, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            account_number: user,
-            password: password
-          })
-        });
+            if (!accountNumber || !password) {
+              msgDiv.textContent = "口座番号とパスワードを入力してください。";
+              return;
+            }
 
-        if (!response.ok) {
-          throw new Error("ログインに失敗しました");
-        }
+            try {
+              const response = await fetch(API_LOGIN, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  number: accountNumber,
+                  password: password
+                })
+              });
 
-        const data = await response.json();
-        if (data.success) {
-          // ログイン成功
-          sessionStorage.setItem('logged_in', 'true');
-          window.location.href = '/pages/login.html';
-        } else {
-          msgDiv.textContent = "ログインに失敗しました。口座番号またはパスワードが違います。";
-        }
-      } catch (error) {
-        console.error(error);
-        msgDiv.textContent = "エラーが発生しました。";
-      }
-    })
+              const data = await response.json();
 
-    let senderData = null;
-    let recipientData = null;
+              if (!response.ok || !data.ok) {
+                msgDiv.textContent = data?.error ?? "ログインに失敗しました。";
+                return;
+              }
 
-   
-   
-
-    // 画面読み込み時に実行
-    window.onload = async () => {
-      // IDがない場合はエラー
-      if (!user) {
-        msgDiv.textContent = "エラー: 口座番号またはパスワードが違いますトップからやり直してください。";
-        return;
-      }
-
-      console.log(`自分: ${senderId}, 相手: ${recipientId}`);
-
-      try {
-        
-        if (!senderRes.ok || !recipientRes.ok) {
-          throw new Error("ユーザー情報の取得に失敗しました");
-        }
-
-        // データを取り出す
-        // もしAPIが配列 [ {user...} ] で返してくるなら data[0] にする処理が必要
-        const sData = await senderRes.json();
-        const rData = await recipientRes.json();
-
-        // APIが配列で返すかオブジェクトで返すかで分岐（念のため）
-        senderData = Array.isArray(sData) ? sData[0] : sData;
-        recipientData = Array.isArray(rData) ? rData[0] : rData;
-
-        if(!senderData || !recipientData) {
-          throw new Error("ユーザーデータが見つかりませんでした");
-        }
-
-        updateUI();
-
-      } catch (error) {
-        console.error(error);
-        msgDiv.textContent = "データの読み込みに失敗しました: " + error.message;
-      }
-    };
-    </script>
-
+              sessionStorage.setItem("logged_in", "true");
+              sessionStorage.setItem("account_number", accountNumber);
+              window.location.href = "/pages/1.html";
+            } catch (error) {
+              console.error(error);
+              msgDiv.textContent = "通信エラーが発生しました。";
+            }
+          });
+        </script>
       </div>
-
     </div>
   </div>
-  </body>
-  </html>
+</body>
+</html>
