@@ -84,10 +84,20 @@
     // accounts.js の返却仕様に完全一致させる
     let icon = data.icon_url ?? null;
 
-    // 相対パス対策
-    if (icon && icon.startsWith("/")) {
-      icon = new URL(icon, location.origin).toString();
+    // 相対パス対策（/ 始まりも human/ 始まりも全部補正する）
+    if (icon && typeof icon === "string") {
+    icon = icon.trim();
+
+    // すでに http(s) ならそのまま
+    if (!/^https?:\/\//i.test(icon)) {
+        // human/... みたいな相対パスは先頭に / を付けてルート基準にする
+        if (!icon.startsWith("/")) icon = "/" + icon;
+
+        // ルート基準の絶対URLへ
+        icon = new URL(icon, location.origin).toString();
     }
+    }
+
 
     return {
       name: data.name ?? null,
