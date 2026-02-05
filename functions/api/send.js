@@ -20,7 +20,7 @@ export async function onRequestPost(context) {
 
     // 送金元のユーザー情報を取得
     const senderResult = await db
-      .prepare("SELECT * FROM user WHERE number = ?")
+      .prepare("SELECT * FROM Users WHERE number = ?")
       .bind(sender_number)
       .first();
 
@@ -30,7 +30,7 @@ export async function onRequestPost(context) {
 
     // 受取人のユーザー情報を取得
     const recipientResult = await db
-      .prepare("SELECT * FROM user WHERE number = ?")
+      .prepare("SELECT * FROM Users WHERE number = ?")
       .bind(recipient_number)
       .first();
 
@@ -48,7 +48,7 @@ export async function onRequestPost(context) {
 
     // 送金元の残高を減らす
     const updateSenderResult = await db
-      .prepare("UPDATE user SET balance = balance - ? WHERE number = ?")
+      .prepare("UPDATE Users SET balance = balance - ? WHERE number = ?")
       .bind(sendAmount, sender_number)
       .run();
 
@@ -58,14 +58,14 @@ export async function onRequestPost(context) {
 
     // 受取人の残高を増やす
     const updateRecipientResult = await db
-      .prepare("UPDATE user SET balance = balance + ? WHERE number = ?")
+      .prepare("UPDATE Users SET balance = balance + ? WHERE number = ?")
       .bind(sendAmount, recipient_number)
       .run();
 
     if (updateRecipientResult.changes === 0) {
       // ロールバック（送金元の残高を戻す）
       await db
-        .prepare("UPDATE user SET balance = balance + ? WHERE number = ?")
+        .prepare("UPDATE Users SET balance = balance + ? WHERE number = ?")
         .bind(sendAmount, sender_number)
         .run();
       
@@ -74,12 +74,12 @@ export async function onRequestPost(context) {
 
     // 更新後の残高を取得
     const updatedSender = await db
-      .prepare("SELECT balance FROM user WHERE number = ?")
+      .prepare("SELECT balance FROM Users WHERE number = ?")
       .bind(sender_number)
       .first();
 
     const updatedRecipient = await db
-      .prepare("SELECT balance FROM user WHERE number = ?")
+      .prepare("SELECT balance FROM Users WHERE number = ?")
       .bind(recipient_number)
       .first();
 
