@@ -81,6 +81,7 @@
   <script>
     const API_GET_USER = '/api/accounts';
     const API_SEND_MONEY = '/api/transactions';
+    const API_CREATE_SEND = '/api/createsend';
 
     const senderId = sessionStorage.getItem('target_account_number');
     const recipientId = sessionStorage.getItem('send_to_account');
@@ -140,7 +141,10 @@
 
     btn.addEventListener("click", async () => {
       const amountInput = document.getElementById("amount");
-      const amount = parseInt(amountInput.value);
+      const messageInput = document.getElementById("message");
+
+      const amount = parseInt(amountInput.value, 10);
+      const userMessage = (messageInput?.value ?? "").toString();
 
       msgDiv.textContent = "";
 
@@ -157,7 +161,7 @@
       btn.textContent = "送金処理中...";
 
       try {
-        const response = await fetch(API_SEND_MONEY, {
+        const txRes = await fetch(API_SEND_MONEY, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -168,20 +172,43 @@
           })
         });
 
-        const result = await response.json();
+        const txResult = await response.json();
 
-        if (response.ok && result.success) {
-          location.href = "4.html";
-        } else {
-          throw new Error(result.message || result.error || "送金に失敗しました");
+        if (!txRes.ok && txResult.success) {
+          throw new Error(txResult.message || txResult.error || "送金に失敗しました");
         }
 
-      } catch (error) {
-        msgDiv.textContent = error.message;
-        btn.disabled = false;
-        btn.textContent = "送金する";
-      }
-    });
+        // 2) transactions成功後に，D1へ履歴保存（sendテーブル）
+        // createsend.js は from_id,to_id,amount,message を期待している :contentReference[oaicite:2]{index=2}
+        const logRes = await fetch(API_CREATE_SEND, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from_id: parseInt(senderId, 10),
+            to_id: parseInt(recipientId, 10),
+            amount: amount,
+            message: userMessage
+          })
+        });
+
+        const logResult = await logRes.json();
+
+        // 履歴保存が失敗しても，送金自体は成功しているので致命的にはしない設計
+        if (!(logRes.ok && logResult.success)) {
+          console.error("履歴保存に失敗:", logResult);
+          // ここで画面に出したければ下の1行を有効化
+          // msgDiv.textContent = "送金は成功しましたが，履歴保存に失敗しました．";
+        }
+
+        // 3) 画面遷移
+        location.href = "4.html";
+
+        } catch (error) {
+          msgDiv.textContent = error.message;
+          btn.disabled = false;
+          btn.textContent = "送金する";
+        }
+      });
   </script>
 
 </body>
