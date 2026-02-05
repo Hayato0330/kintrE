@@ -105,6 +105,7 @@
 
       if (response.ok && result.success) {
         sessionStorage.setItem('created_payment_link', result.url);
+        sessionStorage.setItem('access_granted', 'true');
         location.href = "step7_2.html";
       } else {
         throw new Error(result.error || "作成に失敗しました");
@@ -119,6 +120,7 @@
   });
 
   document.getElementById("goHomeBtn").addEventListener("click", () => {
+    sessionStorage.setItem('access_granted', 'true');
     location.href = "./1.html";
   });
 </script>

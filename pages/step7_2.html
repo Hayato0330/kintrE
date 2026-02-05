@@ -128,6 +128,14 @@
 
   <!-- 自分のQR表示処理 -->
   <script src="../public/createqr.js"></script>
+  <script>
+    // このページ（トップ）に来たら、古いアクセス許可証（手形）を削除してリセットする
+    sessionStorage.removeItem('access_granted');
+    
+    // もし「ログアウト」として完全に情報を消したい場合は、
+    // 以下のように書くと全データ（口座番号など）も消えます。
+    // sessionStorage.clear(); 
+</script>
 
 </body>
 </html>
