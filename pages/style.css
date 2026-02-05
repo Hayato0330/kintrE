@@ -128,7 +128,7 @@ input[type="number"]:focus{
   border:0;
   border-radius:14px;
   cursor:pointer;
-  background-color: rgb(255, 174, 190);
+  background-color: rgb(248, 69, 104);
   padding: 8px 16px;
   color: white;
 }
@@ -491,7 +491,7 @@ input[type="number"]:focus{
   border:0;
   border-radius:10px;
   cursor:pointer;
-  background-color: rgb(255, 174, 190); /* 薄い青 */
+  background-color: rgb(248, 69, 104); /* 薄い青 */
   white-space:nowrap;
   color: white;
 }
@@ -505,7 +505,7 @@ input[type="number"]:focus{
 /* ★クリック後に赤が残らないように強制リセット */
 .hide-btn:focus,
 .hide-btn:focus-visible{
-  background-color: rgb(255, 174, 190) !important; /* 薄い青に戻す */
+  background-color: rgb(248, 69, 104) !important; /* 薄い青に戻す */
   outline:none !important;
   box-shadow:none !important;
 }
@@ -549,7 +549,7 @@ input[type="number"]:focus{
   border: 0;
   border-radius: 10px;
   cursor: pointer;
-  background-color:  rgb(255, 174, 190);
+  background-color:  rgb(248, 69, 104);
   color: white;
   font-weight: 600;
 }
@@ -564,7 +564,7 @@ input[type="number"]:focus{
 /* スマホ（hoverが貼り付く端末）では hover を無効化して薄青に戻す */
 @media (hover: none) {
   .hide-btn:hover{
-    background-color: rgb(255, 174, 190) !important;
+    background-color: rgb(248, 69, 104) !important;
     color: white;
   }
 }
