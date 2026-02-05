@@ -121,7 +121,9 @@
       }
 
       // 表示を更新
-      document.getElementById("limit").textContent = data.balance ?? "---";
+document.getElementById("limit").textContent =
+  data.balance != null ? Number(data.balance).toLocaleString("ja-JP") : "---";
+
 
     } catch (e) {
       document.getElementById("msg").textContent = "通信エラーです";
