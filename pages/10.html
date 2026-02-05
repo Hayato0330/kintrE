@@ -71,22 +71,39 @@
 
   // 送信先情報を accounts API から取得する．
   // 注意：このURLとレスポンス形式は，あなたの /api/accounts 実装に合わせて調整する必要がある．
-  async function fetchAccountInfo(accountNumber) {
+    async function fetchAccountInfo(accountNumber) {
     try {
-      const res = await fetch("/api/accounts?number=" + encodeURIComponent(accountNumber), { cache: "no-store" });
-      const data = await res.json();
-      if (!res.ok) return null;
+        const res = await fetch("/api/accounts?number=" + encodeURIComponent(accountNumber), { cache: "no-store" });
+        const data = await res.json();
+        if (!res.ok) return null;
 
-      // ここは実装に合わせてフィールド名を調整する．
-      // よくある例：{ name: "...", icon: "..." } または { username: "...", icon_url: "..." }
-      const name = data.name ?? data.username ?? data.user_name ?? null;
-      const icon = data.icon ?? data.icon_url ?? data.avatar ?? null;
+        // 配列でも単体でも対応（sent tab.htmlと同じ）:contentReference[oaicite:3]{index=3}
+        const obj = Array.isArray(data) ? data[0] : data;
+        if (!obj) return null;
 
-      return { name, icon };
-    } catch {
-      return null;
+        // フィールド名の候補（あなたのAPIに合わせて増減してよい）
+        const name = obj.name ?? obj.username ?? obj.user_name ?? null;
+
+        let icon = obj.icon ?? obj.icon_url ?? obj.avatar ?? obj.avatar_url ?? obj.image ?? null;
+
+        // iconが相対パスなら絶対URLに補正
+        if (icon && typeof icon === "string") {
+        const trimmed = icon.trim();
+        if (trimmed.startsWith("/")) {
+            icon = new URL(trimmed, location.origin).toString();
+        }
+        }
+
+        // デバッグしたいなら一旦これを有効化
+        // console.log("accounts:", obj);
+
+        return { name, icon };
+    } catch (e) {
+        console.error("fetchAccountInfo failed:", e);
+        return null;
     }
-  }
+    }
+
 
   function render(rows) {
     listEl.innerHTML = "";
