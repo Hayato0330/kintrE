@@ -297,14 +297,14 @@ input[type="number"]:focus{
 
 .form-container .optional {
   color: #aaa;
-  font-size: 12px;
+  font-size: 24px;
 }
 
 .form-container textarea {
   width: 100%;
   min-height: 80px;
   padding: 12px;
-  font-size: 16px;
+  font-size: 24px;
   border: 1px solid var(--border);
   border-radius: 12px;
   outline: none;
