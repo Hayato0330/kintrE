@@ -120,6 +120,7 @@
     const billId = params.get("bill_id");
     currentBillId = billId;
     sessionStorage.setItem("account_number", number);
+    sessionStorage.setItem('access_granted', 'true');
 
     location.href = `8.html?bill_id=${billId}&number=${encodeURIComponent(data.number ?? number)}`;
 

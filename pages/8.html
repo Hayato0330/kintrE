@@ -54,6 +54,26 @@
 <div id="msg" style="color:red;margin-top:12px;"></div>
 </div>
 </div>
+<script>
+  // 1. 通行手形（access_granted）があるかチェック
+  if (!sessionStorage.getItem('access_granted')) {
+    
+    // ▼ 手形がない場合（直打ち）
+    alert("不正なアクセスです。最初からやり直してください。");
+    // トップページや前の画面に強制的に戻す
+    location.href = "/";
+
+  } else {
+
+    // ▼ 手形がある場合（正規ルート）
+    
+    // 2. 二度とこの画面を表示させないため（リロード対策）、手形をすぐに破り捨てる
+    sessionStorage.removeItem('access_granted');
+
+    // そのまま画面を表示する処理へ...
+    console.log("正規のアクセスです");
+  }
+</script>
 
 <script>
   let currentBillId = null;
@@ -213,6 +233,7 @@ document.getElementById("limit").textContent =
       }
 
       // 成功したら4.htmlに遷移
+      sessionStorage.setItem('access_granted', 'true');
       location.href = "4.html";
 
     } catch (e) {
