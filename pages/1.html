@@ -107,7 +107,7 @@
         return;
       }
       sessionStorage.setItem("target_account_number", acct);
-      location.href = "pages/human_select.html";
+      location.href = "./human_select.html";
     });
 
     document.getElementById("requestBtn").addEventListener("click", () => {
@@ -117,7 +117,7 @@
       if (!acct) return;
 
       sessionStorage.setItem("target_account_number", acct);
-      location.href = "pages/7-1.html";
+      location.href = "./7-1.html";
     });
 
     document.getElementById("historyBtn").addEventListener("click", () => {
@@ -127,7 +127,7 @@
       if (!acct) return;
 
       sessionStorage.setItem("target_account_number", acct);
-      location.href = "pages/9.html";
+      location.href = "./9.html";
     });
 
     /* ------------ APIから口座情報取得 ------------- */
